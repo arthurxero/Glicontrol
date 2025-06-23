@@ -5,20 +5,21 @@ import styles from './styleRegister.module.css';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { doc, updateDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from '../../services/firebaseConfig';
-import { useAuthState } from 'react-firebase-hooks/auth';
 
-export default function ColetaDados() {
+export default function Cadastro() {
   const router = useRouter();
-  const [user, loading] = useAuthState(auth);
   const [formData, setFormData] = useState({
-    altura: '',
-    peso: '',
-    idade: ''
+    nome: '',
+    sobrenome: '',
+    dataNascimento: '',
+    email: '',
+    password: ''
   });
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Efeito para animar a entrada dos elementos
@@ -26,121 +27,138 @@ export default function ColetaDados() {
     setIsLoaded(true);
   }, []);
 
-  // Redirecionar se não estiver logado
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login');
-    }
-  }, [user, loading, router]);
-
   const fields = [
     { 
-      label: 'Altura (cm)', 
-      name: 'altura', 
-      type: 'number', 
-      placeholder: 'Ex: 172',
-      min: 50,
-      max: 300,
-      value: formData.altura,
+      label: 'Nome', 
+      name: 'nome', 
+      type: 'text', 
+      placeholder: 'Insira seu nome',
+      value: formData.nome,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => 
-        setFormData({...formData, altura: e.target.value}),
+        setFormData({...formData, nome: e.target.value}),
       icon: (
         <svg className={styles.inputIcon} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
         </svg>
       )
     },
     { 
-      label: 'Peso (kg)', 
-      name: 'peso', 
-      type: 'number', 
-      placeholder: 'Ex: 80',
-      min: 20,
-      max: 500,
-      value: formData.peso,
+      label: 'Sobrenome', 
+      name: 'sobrenome', 
+      type: 'text', 
+      placeholder: 'Insira seu sobrenome',
+      value: formData.sobrenome,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => 
-        setFormData({...formData, peso: e.target.value}),
+        setFormData({...formData, sobrenome: e.target.value}),
       icon: (
         <svg className={styles.inputIcon} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 3v18m-4-9h8M8 6l4-3 4 3M8 18l4 3 4-3" />
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
         </svg>
       )
     },
     { 
-      label: 'Idade', 
-      name: 'idade', 
-      type: 'number', 
-      placeholder: 'Ex: 25',
-      min: 1,
-      max: 120,
-      value: formData.idade,
+      label: 'Data de nascimento', 
+      name: 'dataNascimento', 
+      type: 'date', 
+      placeholder: 'dd/mm/aaaa',
+      max: new Date().toISOString().split('T')[0],
+      value: formData.dataNascimento,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => 
-        setFormData({...formData, idade: e.target.value}),
+        setFormData({...formData, dataNascimento: e.target.value}),
       icon: (
         <svg className={styles.inputIcon} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="10" />
-          <polyline points="12,6 12,12 16,14" />
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+          <line x1="16" y1="2" x2="16" y2="6" />
+          <line x1="8" y1="2" x2="8" y2="6" />
+          <line x1="3" y1="10" x2="21" y2="10" />
         </svg>
       )
-    }
+    },
+    { 
+      label: 'E-mail', 
+      name: 'email', 
+      type: 'email', 
+      placeholder: 'Insira seu e-mail',
+      value: formData.email,
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) => 
+        setFormData({...formData, email: e.target.value}),
+      icon: (
+        <svg className={styles.inputIcon} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+          <polyline points="22,6 12,13 2,6" />
+        </svg>
+      )
+    },
+    { 
+      label: 'Senha', 
+      name: 'password', 
+      type: 'password', 
+      placeholder: 'Crie uma senha',
+      minLength: 6,
+      value: formData.password,
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) => 
+        setFormData({...formData, password: e.target.value}),
+      icon: (
+        <svg className={styles.inputIcon} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+      )
+    },
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setLoading(true);
     setError('');
 
-    if (!user) {
-      setError('Usuário não encontrado. Faça login novamente.');
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      // Atualizar documento do usuário no Firestore
-      await updateDoc(doc(db, "users", user.uid), {
-        altura: parseInt(formData.altura),
-        peso: parseInt(formData.peso),
-        idade: parseInt(formData.idade),
-        dadosComplementares: true,
-        updatedAt: new Date()
+      const userCredential = await createUserWithEmailAndPassword(
+        auth, 
+        formData.email, 
+        formData.password
+      );
+
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        nome: formData.nome,
+        sobrenome: formData.sobrenome,
+        dataNascimento: formData.dataNascimento,
+        email: formData.email,
+        createdAt: new Date()
       });
 
-      // Redirecionar para página de informações
       router.push('/informations');
 
     } catch (error: any) {
-      console.error('Erro ao salvar dados:', error);
-      setError('Erro ao salvar dados. Tente novamente.');
+      setError(translateFirebaseError(error.code));
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.registerPanel}>
-          <div className={styles.logoContainer}>
-            <Image src={glicontrolLogo} alt="GliControl" className={styles.logo} priority width={240} height={60} />
-          </div>
-          <div style={{ textAlign: 'center', padding: '20px' }}>
-            <div className={styles.buttonLoader}></div>
-            <p>Carregando...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const translateFirebaseError = (code: string) => {
+    switch(code) {
+      case 'auth/email-already-in-use':
+        return 'Este e-mail já está cadastrado';
+      case 'auth/weak-password':
+        return 'A senha deve ter no mínimo 6 caracteres';
+      case 'auth/invalid-email':
+        return 'E-mail inválido';
+      default:
+        return 'Erro ao cadastrar. Tente novamente.';
+    }
+  };
 
   return (
     <div className={styles.container}>
       <div className={styles.backButtonContainer}>
-        <Link href="/informations" className={styles.backButton}>
+        <Link href="/" className={styles.backButton}>
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
-          <span>Pular</span>
+          <span>Voltar</span>
         </Link>
       </div>
       
@@ -149,7 +167,7 @@ export default function ColetaDados() {
           <Image src={glicontrolLogo} alt="GliControl" className={styles.logo} priority width={240} height={60} />
         </div>
 
-        <h1 className={styles.pageTitle}>Complete seu perfil</h1>
+        <h1 className={styles.pageTitle}>Crie sua conta</h1>
 
         <form onSubmit={handleSubmit} className={styles.registerForm}>
           {error && (
@@ -180,8 +198,8 @@ export default function ColetaDados() {
                     onChange={field.onChange}
                     required
                     className={styles.input}
-                    min={field.min}
-                    max={field.max}
+                    {...field.max && { max: field.max }}
+                    {...field.minLength && { minLength: field.minLength }}
                   />
                 </div>
               </div>
@@ -192,29 +210,22 @@ export default function ColetaDados() {
             <button 
               type="submit" 
               className={styles.submitButton}
-              disabled={isLoading}
+              disabled={loading}
             >
-              {isLoading ? (
+              {loading ? (
                 <>
                   <span className={styles.buttonLoader}></span>
-                  <span>Salvando dados...</span>
+                  <span>Processando...</span>
                 </>
-              ) : (
-                <>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20,6 9,17 4,12" />
-                  </svg>
-                  <span>Prosseguir</span>
-                </>
-              )}
+              ) : 'Prosseguir'}
             </button>
           </div>
         </form>
         
         <div className={styles.loginPrompt}>
-          <p>Você pode pular esta etapa e completar depois</p>
-          <Link href="/informations" className={styles.loginLink}>
-            Pular por agora
+          <p>Já tem uma conta?</p>
+          <Link href="/login" className={styles.loginLink}>
+            Faça login
           </Link>
         </div>
       </div>

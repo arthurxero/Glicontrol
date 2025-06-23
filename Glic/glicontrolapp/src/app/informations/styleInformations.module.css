@@ -1,0 +1,459 @@
+/* styleInformations.module.css */
+
+.container {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #f9fcfd, #e6f7fb);
+  padding: 30px 15px;
+  overflow: hidden;
+}
+
+/* Decorações de fundo */
+.backgroundDecoration {
+  position: fixed;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(0, 151, 178, 0.15), rgba(0, 151, 178, 0.05));
+  top: -250px;
+  right: -200px;
+  z-index: 0;
+  animation: float 6s ease-in-out infinite;
+}
+
+.backgroundDecoration2 {
+  position: fixed;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(0, 151, 178, 0.12), rgba(0, 151, 178, 0.02));
+  bottom: -200px;
+  left: -150px;
+  z-index: 0;
+  animation: float 8s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+/* Painel Principal */
+.informationPanel {
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 15px 40px rgba(0, 151, 178, 0.15);
+  padding: 40px 35px;
+  width: 100%;
+  max-width: 750px;
+  margin: 20px;
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(0, 151, 178, 0.1);
+}
+
+.panelLoaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Logo */
+.logoContainer {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo {
+  height: auto;
+  transition: transform 0.3s ease;
+  filter: drop-shadow(0 2px 8px rgba(0, 151, 178, 0.1));
+}
+
+.logo:hover {
+  transform: scale(1.02);
+}
+
+/* Títulos */
+.pageTitle {
+  font-size: 2rem;
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 8px;
+  font-weight: 700;
+  position: relative;
+  letter-spacing: -0.02em;
+}
+
+.pageTitle:after {
+  content: '';
+  display: block;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(135deg, #0097B2, #00B4D8);
+  margin: 12px auto 0;
+  border-radius: 2px;
+}
+
+.pageSubtitle {
+  text-align: center;
+  color: #64748b;
+  font-size: 1.1rem;
+  margin-bottom: 35px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* Formulário */
+.informationForm {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* Layout de grade para os campos */
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  margin-bottom: 10px;
+}
+
+/* Grupos de Input */
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.inputLabel {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-left: 4px;
+  letter-spacing: -0.01em;
+}
+
+.inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #0097B2;
+  z-index: 2;
+}
+
+.input {
+  width: 100%;
+  padding: 16px 16px 16px 50px;
+  border-radius: 14px;
+  border: 2px solid #e2e8f0;
+  font-size: 1.05rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: #f8fafc;
+  color: #2c3e50;
+  font-weight: 500;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #0097B2;
+  background-color: white;
+  box-shadow: 0 0 0 4px rgba(0, 151, 178, 0.1);
+  transform: translateY(-1px);
+}
+
+.input::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.input:hover:not(:focus) {
+  border-color: #cbd5e1;
+}
+
+/* Botões */
+.buttonsContainer {
+  margin-top: 15px;
+}
+
+.submitButton {
+  background: linear-gradient(135deg, #0097B2, #00B4D8);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 14px;
+  border: none;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  box-shadow: 0 8px 25px rgba(0, 151, 178, 0.25);
+  letter-spacing: -0.01em;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #018aa3, #0095c7);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(0, 151, 178, 0.35);
+}
+
+.submitButton:active:not(:disabled) {
+  transform: translateY(0px);
+}
+
+.submitButton:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Botão de voltar */
+.backButtonContainer {
+  position: fixed;
+  top: 25px;
+  left: 25px;
+  z-index: 10;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 22px;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 35px;
+  color: #2c3e50;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(0, 151, 178, 0.1);
+}
+
+.backButton:hover {
+  transform: translateX(-8px);
+  color: #0097B2;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  background-color: white;
+}
+
+/* Área de pular */
+.skipPrompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.skipPrompt p {
+  margin: 0;
+  color: #64748b;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.skipLink {
+  color: #0097B2;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+.skipLink:hover {
+  color: #018aa3;
+  background-color: rgba(0, 151, 178, 0.05);
+  text-decoration: underline;
+}
+
+/* Mensagens */
+.errorMessage {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+  color: #dc2626;
+  padding: 16px 18px;
+  border-radius: 12px;
+  border-left: 4px solid #dc2626;
+  font-size: 1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.successMessage {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+  color: #16a34a;
+  padding: 16px 18px;
+  border-radius: 12px;
+  border-left: 4px solid #16a34a;
+  font-size: 1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  backdrop-filter: blur(10px);
+}
+
+/* Loader */
+.loadingContainer {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.loadingContainer p {
+  margin-top: 15px;
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+.buttonLoader {
+  width: 22px;
+  height: 22px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .informationPanel {
+    padding: 35px 28px;
+    margin: 15px;
+  }
+  
+  .pageTitle {
+    font-size: 1.75rem;
+  }
+  
+  .pageSubtitle {
+    font-size: 1rem;
+    margin-bottom: 30px;
+  }
+  
+  .backButtonContainer {
+    top: 20px;
+    left: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .informationPanel {
+    padding: 30px 22px;
+    margin: 12px;
+  }
+  
+  .input {
+    padding: 14px 14px 14px 46px;
+    font-size: 1rem;
+  }
+  
+  .inputIcon {
+    left: 16px;
+  }
+  
+  .backButton {
+    padding: 12px 18px;
+    font-size: 0.95rem;
+  }
+  
+  .submitButton {
+    padding: 14px 20px;
+    font-size: 1.05rem;
+  }
+  
+  .pageTitle {
+    font-size: 1.6rem;
+    margin-bottom: 6px;
+  }
+  
+  .pageTitle:after {
+    width: 70px;
+    height: 3px;
+  }
+  
+  .pageSubtitle {
+    font-size: 0.95rem;
+    margin-bottom: 28px;
+  }
+}
+
+@media (max-width: 400px) {
+  .informationPanel {
+    padding: 25px 18px;
+    margin: 10px;
+  }
+  
+  .logoContainer {
+    margin-bottom: 15px;
+  }
+  
+  .pageTitle {
+    font-size: 1.45rem;
+    margin-bottom: 5px;
+  }
+  
+  .pageSubtitle {
+    font-size: 0.9rem;
+    margin-bottom: 25px;
+  }
+  
+  .input {
+    font-size: 0.95rem;
+    padding: 13px 13px 13px 44px;
+  }
+  
+  .formGrid {
+    gap: 18px;
+  }
+  
+  .backButton {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+  
+  .submitButton {
+    font-size: 1rem;
+    padding: 13px 18px;
+  }
+}
