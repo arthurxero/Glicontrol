@@ -1,0 +1,1676 @@
+/* styleProfile.module.css - Versão Modernizada */
+
+/* Base styles from styleDash.module.css */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
+  background: linear-gradient(135deg, #f8fdfe 0%, #e6f7fb 100%);
+  min-height: 100vh;
+}
+
+.header {
+  height: 120px;
+  position: relative;
+  background: linear-gradient(to right, #e6f7fb, #d1f0f7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 25px 0 0 0;
+  box-shadow: 0 2px 15px rgba(0, 151, 178, 0.1);
+}
+
+
+.menuToggle {
+  position: fixed;
+  left: 20px;
+  top: 25px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
+  color: #2c3e50;
+  padding: 12px;
+  transition: all 0.25s ease-out;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.menuToggle:hover {
+  color: #0097B2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 151, 178, 0.2);
+}
+
+.menuToggle:active {
+  transform: translateY(1px);
+}
+
+/* Logo container com animação melhorada */
+.logoContainer {
+  padding-left: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(15px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logoLoaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.logo {
+  max-width: 600px;
+  height: auto;
+  object-fit: contain;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 4px 15px rgba(0, 151, 178, 0.1));
+}
+
+.logo:hover {
+  transform: scale(1.02) translateY(-2px);
+}
+
+/* Sidebar modernizada */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -300px;
+  width: 300px;
+  height: 100%;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  z-index: 999;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  border-right: 1px solid rgba(0, 151, 178, 0.1);
+  backdrop-filter: blur(20px);
+}
+
+.sidebarOpen {
+  left: 0;
+}
+
+.sidebarNav {
+  padding: 100px 0 30px 0;
+}
+
+.sidebarMenu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebarItem {
+  margin: 6px 20px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.sidebarLink, .sidebarButton {
+  display: flex;
+  align-items: center;
+  padding: 18px 24px;
+  color: #475569;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebarLink::before, .sidebarButton::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #0097B2, #06b6d4);
+  transition: width 0.3s ease;
+  z-index: -1;
+}
+
+.sidebarLink:hover, .sidebarButton:hover {
+  background: linear-gradient(135deg, rgba(0, 151, 178, 0.1), rgba(6, 182, 212, 0.1));
+  color: #0097B2;
+  transform: translateX(8px);
+  box-shadow: 0 4px 15px rgba(0, 151, 178, 0.1);
+}
+
+.sidebarLink:hover::before, .sidebarButton:hover::before {
+  width: 4px;
+}
+
+/* Backdrop melhorado */
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 151, 178, 0.1));
+  z-index: 998;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+/* Modal de Logout melhorado */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 151, 178, 0.2));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+  backdrop-filter: blur(12px);
+}
+
+.modalContent {
+  background: linear-gradient(135deg, #ffffff, #f8fafc);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  max-width: 90%;
+  width: 420px;
+  text-align: center;
+  transform: scale(0.9) translateY(20px);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+}
+
+.fadeIn {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+.modalText {
+  font-size: 1.4rem;
+  margin-bottom: 35px;
+  color: #334155;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.modalButton {
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  font-size: 1rem;
+  min-width: 130px;
+  position: relative;
+  overflow: hidden;
+}
+
+.confirmButton {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+}
+
+.confirmButton:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(239, 68, 68, 0.4);
+}
+
+.cancelButton {
+  background: linear-gradient(135deg, #64748b, #475569);
+  color: white;
+  box-shadow: 0 8px 25px rgba(100, 116, 139, 0.3);
+}
+
+.cancelButton:hover {
+  background: linear-gradient(135deg, #475569, #334155);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(100, 116, 139, 0.4);
+}
+
+/* Main Content */
+.mainContent {
+  padding: 0 20px 40px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.contentLoaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Loading melhorado */
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.loadingSpinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(0, 151, 178, 0.1);
+  border-top: 5px solid #0097B2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 4px 15px rgba(0, 151, 178, 0.2);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ========== PROFILE SPECIFIC STYLES - MODERNIZADOS ========== */
+
+.profileContainer {
+  max-width: 950px;
+  margin: 30px auto;
+  background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 151, 178, 0.08);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.profileContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #0097B2, #06b6d4, #0891b2);
+  border-radius: 24px 24px 0 0;
+}
+
+.profileHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 50px;
+  padding: 35px;
+  background: linear-gradient(135deg, #f0fafc 0%, #e1f5f9 50%, #ffffff 100%);
+  border-radius: 20px;
+  border: 1px solid rgba(0, 151, 178, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.profileHeader::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(0, 151, 178, 0.03), transparent);
+  transform: rotate(45deg);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+.profileAvatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0097B2 0%, #06b6d4 50%, #0891b2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+  color: white;
+  margin-right: 30px;
+  border: 6px solid white;
+  box-shadow: 0 8px 30px rgba(0, 151, 178, 0.25);
+  flex-shrink: 0;
+  font-weight: 700;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.profileAvatar::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  background: linear-gradient(135deg, #0097B2, #06b6d4, #0891b2);
+  border-radius: 50%;
+  z-index: -1;
+  animation: rotate 4s linear infinite;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.profileAvatar:hover {
+  transform: scale(1.05) rotate(5deg);
+}
+
+.profileInfo {
+  flex: 1;
+}
+
+.profileName {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 12px 0;
+  line-height: 1.2;
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.profileEmail {
+  font-size: 1.2rem;
+  color: #64748b;
+  margin: 0 0 20px 0;
+  font-weight: 500;
+}
+
+.profileStats {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.profileStat {
+  background: #0097B2; /* Cor sólida */
+  color: white;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  box-shadow: 0 6px 20px rgba(0, 151, 178, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+
+.profileStat::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.profileStat:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 10px 30px rgba(0, 151, 178, 0.4);
+}
+
+.profileStat:hover::before {
+  left: 100%;
+}
+
+.dailyRecord {
+  margin-top: 50px;
+}
+
+.recordTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 30px 0;
+  text-align: left;
+  padding-left: 8px;
+  position: relative;
+}
+
+.recordTitle::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 30px;
+  background: linear-gradient(135deg, #0097B2, #06b6d4);
+  border-radius: 2px;
+}
+
+.recordTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: linear-gradient(135deg, #ffffff, #fafbfc);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 151, 178, 0.08);
+}
+
+.recordHeader {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  color: #334155;
+  font-weight: 700;
+  padding: 20px 18px;
+  text-align: center;
+  font-size: 1.1rem;
+  border-bottom: 2px solid rgba(0, 151, 178, 0.1);
+  position: relative;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.9rem;
+}
+
+.recordHeader::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 2px;
+  background: linear-gradient(90deg, #0097B2, #06b6d4);
+}
+
+.recordCell {
+  padding: 18px 16px;
+  text-align: center;
+  border-bottom: 1px solid rgba(0, 151, 178, 0.05);
+  color: #475569;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.recordRow {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.recordRow::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(0, 151, 178, 0.05), transparent);
+  transition: width 0.3s ease;
+}
+
+.recordRow:hover {
+  background: linear-gradient(135deg, rgba(0, 151, 178, 0.02), rgba(6, 182, 212, 0.02));
+  transform: translateX(2px);
+}
+
+.recordRow:hover::before {
+  width: 4px;
+}
+
+.recordRow:last-child .recordCell {
+  border-bottom: none;
+}
+
+.totalCell {
+  background: linear-gradient(135deg, #f0fafc 0%, #e1f5f9 100%);
+  font-weight: 700;
+  color: #0891b2;
+  font-size: 1.1rem;
+  border-top: 2px solid rgba(0, 151, 178, 0.2);
+}
+
+.appInfo {
+  text-align: center;
+  margin-top: 50px;
+  padding: 30px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 16px;
+  color: #64748b;
+  font-size: 1.1rem;
+  border: 1px solid rgba(0, 151, 178, 0.08);
+  font-weight: 500;
+  line-height: 1.6;
+  position: relative;
+}
+
+.appInfo::before {
+  content: '💡';
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+/* ========== RESPONSIVIDADE MELHORADA ========== */
+@media (max-width: 768px) {
+  .header {
+    height: 100px;
+    padding-top: 15px;
+  }
+
+  .menuToggle {
+    font-size: 20px;
+    top: 18px;
+    left: 15px;
+    width: 42px;
+    height: 42px;
+  }
+
+  .logo {
+    max-width: 400px;
+  }
+  
+  .profileContainer {
+    margin: 20px auto;
+    padding: 25px;
+    border-radius: 20px;
+  }
+
+  .profileHeader {
+    flex-direction: column;
+    text-align: center;
+    padding: 25px;
+  }
+
+  .profileAvatar {
+    margin-right: 0;
+    margin-bottom: 25px;
+    width: 100px;
+    height: 100px;
+    font-size: 3rem;
+  }
+
+  .profileName {
+    font-size: 2rem;
+  }
+
+  .profileEmail {
+    font-size: 1.1rem;
+  }
+
+  .profileStats {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .recordTitle {
+    font-size: 1.8rem;
+    text-align: center;
+  }
+
+  .recordTable {
+    font-size: 0.95rem;
+  }
+
+  .recordHeader, .recordCell {
+    padding: 14px 10px;
+  }
+
+  .sidebar {
+    width: 280px;
+  }
+}
+
+@media (max-width: 576px) {
+  .header {
+    height: 85px;
+  }
+
+  .menuToggle {
+    font-size: 18px;
+    top: 15px;
+    left: 12px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .logo {
+    max-width: 300px;
+  }
+
+  .profileContainer {
+    margin: 15px;
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .profileHeader {
+    padding: 20px;
+  }
+
+  .profileAvatar {
+    width: 80px;
+    height: 80px;
+    font-size: 2.5rem;
+  }
+
+  .profileName {
+    font-size: 1.8rem;
+  }
+
+  .profileStats {
+    gap: 10px;
+  }
+
+  .profileStat {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+  }
+
+  .recordTitle {
+    font-size: 1.6rem;
+  }
+
+  .recordTable {
+    font-size: 0.85rem;
+  }
+
+  .recordHeader, .recordCell {
+    padding: 12px 8px;
+  }
+
+  .appInfo {
+    padding: 20px;
+    font-size: 1rem;
+  }
+
+  .sidebar {
+    width: 250px;
+  }
+}
+/* ========== SISTEMA DE FOTO DE PERFIL - ESTILOS COMPLEMENTARES ========== */
+
+/* Container do Avatar com hover e overlay */
+.profileAvatarContainer {
+  position: relative;
+  cursor: pointer;
+  margin-right: 30px;
+  flex-shrink: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.profileAvatarContainer:hover {
+  transform: scale(1.05);
+}
+
+/* Imagem do avatar quando há foto */
+.profileAvatarImage {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 6px solid white;
+  box-shadow: 0 8px 30px rgba(0, 151, 178, 0.25);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* Overlay que aparece no hover */
+.profileAvatarOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(0, 151, 178, 0.8), rgba(6, 182, 212, 0.8));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(4px);
+}
+
+.profileAvatarContainer:hover .profileAvatarOverlay {
+  opacity: 1;
+}
+
+.cameraIcon {
+  font-size: 2rem;
+  color: white;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Modal de Foto */
+.photoModalContent {
+  background: linear-gradient(135deg, #ffffff, #f8fafc);
+  padding: 40px;
+  border-radius: 24px;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.2);
+  max-width: 90%;
+  width: 480px;
+  text-align: center;
+  transform: scale(0.9) translateY(30px);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+}
+
+.photoModalContent::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #0097B2, #06b6d4, #0891b2);
+  border-radius: 24px 24px 0 0;
+}
+
+.photoModalTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 30px 0;
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Container do preview da foto */
+.photoPreviewContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 30px 0 40px 0;
+  position: relative;
+}
+
+.photoPreview {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 6px solid white;
+  box-shadow: 0 12px 40px rgba(0, 151, 178, 0.3);
+  transition: all 0.3s ease;
+}
+
+.photoPreview:hover {
+  transform: scale(1.05);
+  box-shadow: 0 16px 50px rgba(0, 151, 178, 0.4);
+}
+
+.photoPlaceholder {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0097B2 0%, #06b6d4 50%, #0891b2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  color: white;
+  font-weight: 700;
+  border: 6px solid white;
+  box-shadow: 0 12px 40px rgba(0, 151, 178, 0.3);
+  position: relative;
+}
+
+.photoPlaceholder::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  background: linear-gradient(135deg, #0097B2, #06b6d4, #0891b2);
+  border-radius: 50%;
+  z-index: -1;
+  animation: rotate 4s linear infinite;
+}
+
+/* Botões do modal de foto */
+.photoModalButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.photoButton {
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  font-size: 1rem;
+  min-width: 160px;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.photoButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Botão padrão (Escolher Foto) */
+.photoButton {
+  background: linear-gradient(135deg, #0097B2, #06b6d4);
+  color: white;
+  box-shadow: 0 8px 25px rgba(0, 151, 178, 0.3);
+}
+
+.photoButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0891b2, #0284c7);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(0, 151, 178, 0.4);
+}
+
+/* Botão de Upload (Salvar) */
+.uploadButton {
+  background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3) !important;
+}
+
+.uploadButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #16a34a, #15803d) !important;
+  box-shadow: 0 12px 35px rgba(34, 197, 94, 0.4) !important;
+}
+
+/* Botão de Remover */
+.removeButton {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3) !important;
+}
+
+.removeButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+  box-shadow: 0 12px 35px rgba(239, 68, 68, 0.4) !important;
+}
+
+/* Efeito de loading nos botões */
+.photoButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.photoButton:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+/* Animação de pulse para botão de upload */
+.uploadButton:not(:disabled) {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3); }
+  50% { box-shadow: 0 8px 25px rgba(34, 197, 94, 0.5); }
+  100% { box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3); }
+}
+
+/* ========== RESPONSIVIDADE PARA SISTEMA DE FOTO ========== */
+
+@media (max-width: 768px) {
+  .profileAvatarContainer {
+    margin-right: 0;
+    margin-bottom: 25px;
+  }
+
+  .profileAvatarImage {
+    width: 100px;
+    height: 100px;
+  }
+
+  .photoModalContent {
+    width: 90%;
+    padding: 30px 25px;
+    border-radius: 20px;
+  }
+
+  .photoModalTitle {
+    font-size: 1.6rem;
+  }
+
+  .photoPreview, .photoPlaceholder {
+    width: 120px;
+    height: 120px;
+  }
+
+  .photoPlaceholder {
+    font-size: 3rem;
+  }
+
+  .photoModalButtons {
+    gap: 12px;
+  }
+
+  .photoButton {
+    min-width: 140px;
+    padding: 12px 24px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .profileAvatarImage {
+    width: 80px;
+    height: 80px;
+  }
+
+  .photoModalContent {
+    width: 95%;
+    padding: 25px 20px;
+    border-radius: 16px;
+  }
+
+  .photoModalTitle {
+    font-size: 1.4rem;
+  }
+
+  .photoPreview, .photoPlaceholder {
+    width: 100px;
+    height: 100px;
+  }
+
+  .photoPlaceholder {
+    font-size: 2.5rem;
+  }
+
+  .photoButton {
+    min-width: 120px;
+    padding: 10px 20px;
+    font-size: 0.85rem;
+  }
+
+  .cameraIcon {
+    font-size: 1.5rem;
+  }
+}
+
+/* Melhorias de acessibilidade */
+.profileAvatarContainer:focus {
+  outline: 3px solid rgba(0, 151, 178, 0.5);
+  outline-offset: 2px;
+}
+
+.photoButton:focus {
+  outline: 2px solid rgba(0, 151, 178, 0.5);
+  outline-offset: 2px;
+}
+
+/* Animação de entrada do modal */
+.photoModalContent.fadeIn {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+/* ========== SISTEMA DE FOTO DE PERFIL - ESTILOS COMPLEMENTARES ========== */
+
+/* Container do Avatar com hover e overlay */
+.profileAvatarContainer {
+  position: relative;
+  cursor: pointer;
+  margin-right: 30px;
+  flex-shrink: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.profileAvatarContainer:hover {
+  transform: scale(1.05);
+}
+
+/* Imagem do avatar quando há foto */
+.profileAvatarImage {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 6px solid white;
+  box-shadow: 0 8px 30px rgba(0, 151, 178, 0.25);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* Overlay que aparece no hover */
+.profileAvatarOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(0, 151, 178, 0.8), rgba(6, 182, 212, 0.8));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(4px);
+}
+
+.profileAvatarContainer:hover .profileAvatarOverlay {
+  opacity: 1;
+}
+
+.cameraIcon {
+  font-size: 2rem;
+  color: white;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Modal de Foto */
+.photoModalContent {
+  background: linear-gradient(135deg, #ffffff, #f8fafc);
+  padding: 40px;
+  border-radius: 24px;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.2);
+  max-width: 90%;
+  width: 480px;
+  text-align: center;
+  transform: scale(0.9) translateY(30px);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+}
+
+.photoModalContent::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #0097B2, #06b6d4, #0891b2);
+  border-radius: 24px 24px 0 0;
+}
+
+.photoModalTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 30px 0;
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Container do preview da foto */
+.photoPreviewContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 30px 0 40px 0;
+  position: relative;
+}
+
+.photoPreview {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 6px solid white;
+  box-shadow: 0 12px 40px rgba(0, 151, 178, 0.3);
+  transition: all 0.3s ease;
+}
+
+.photoPreview:hover {
+  transform: scale(1.05);
+  box-shadow: 0 16px 50px rgba(0, 151, 178, 0.4);
+}
+
+.photoPlaceholder {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0097B2 0%, #06b6d4 50%, #0891b2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  color: white;
+  font-weight: 700;
+  border: 6px solid white;
+  box-shadow: 0 12px 40px rgba(0, 151, 178, 0.3);
+  position: relative;
+}
+
+.photoPlaceholder::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  background: linear-gradient(135deg, #0097B2, #06b6d4, #0891b2);
+  border-radius: 50%;
+  z-index: -1;
+  animation: rotate 4s linear infinite;
+}
+
+/* Botões do modal de foto */
+.photoModalButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.photoButton {
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  font-size: 1rem;
+  min-width: 160px;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.photoButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Botão padrão (Escolher Foto) */
+.photoButton {
+  background: linear-gradient(135deg, #0097B2, #06b6d4);
+  color: white;
+  box-shadow: 0 8px 25px rgba(0, 151, 178, 0.3);
+}
+
+.photoButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0891b2, #0284c7);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(0, 151, 178, 0.4);
+}
+
+/* Botão de Upload (Salvar) */
+.uploadButton {
+  background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3) !important;
+}
+
+.uploadButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #16a34a, #15803d) !important;
+  box-shadow: 0 12px 35px rgba(34, 197, 94, 0.4) !important;
+}
+
+/* Botão de Remover */
+.removeButton {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3) !important;
+}
+
+.removeButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+  box-shadow: 0 12px 35px rgba(239, 68, 68, 0.4) !important;
+}
+
+/* Efeito de loading nos botões */
+.photoButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.photoButton:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+/* Animação de pulse para botão de upload */
+.uploadButton:not(:disabled) {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3); }
+  50% { box-shadow: 0 8px 25px rgba(34, 197, 94, 0.5); }
+  100% { box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3); }
+}
+
+/* ========== RESPONSIVIDADE PARA SISTEMA DE FOTO ========== */
+
+@media (max-width: 768px) {
+  .profileAvatarContainer {
+    margin-right: 0;
+    margin-bottom: 25px;
+  }
+
+  .profileAvatarImage {
+    width: 100px;
+    height: 100px;
+  }
+
+  .photoModalContent {
+    width: 90%;
+    padding: 30px 25px;
+    border-radius: 20px;
+  }
+
+  .photoModalTitle {
+    font-size: 1.6rem;
+  }
+
+  .photoPreview, .photoPlaceholder {
+    width: 120px;
+    height: 120px;
+  }
+
+  .photoPlaceholder {
+    font-size: 3rem;
+  }
+
+  .photoModalButtons {
+    gap: 12px;
+  }
+
+  .photoButton {
+    min-width: 140px;
+    padding: 12px 24px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .profileAvatarImage {
+    width: 80px;
+    height: 80px;
+  }
+
+  .photoModalContent {
+    width: 95%;
+    padding: 25px 20px;
+    border-radius: 16px;
+  }
+
+  .photoModalTitle {
+    font-size: 1.4rem;
+  }
+
+  .photoPreview, .photoPlaceholder {
+    width: 100px;
+    height: 100px;
+  }
+
+  .photoPlaceholder {
+    font-size: 2.5rem;
+  }
+
+  .photoButton {
+    min-width: 120px;
+    padding: 10px 20px;
+    font-size: 0.85rem;
+  }
+
+  .cameraIcon {
+    font-size: 1.5rem;
+  }
+}
+
+/* Melhorias de acessibilidade */
+.profileAvatarContainer:focus {
+  outline: 3px solid rgba(0, 151, 178, 0.5);
+  outline-offset: 2px;
+}
+
+.photoButton:focus {
+  outline: 2px solid rgba(0, 151, 178, 0.5);
+  outline-offset: 2px;
+}
+
+/* Animação de entrada do modal */
+.photoModalContent.fadeIn {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* ========== MELHORIAS ADICIONAIS PARA O SISTEMA DE FOTO ========== */
+
+/* AJUSTE PRINCIPAL - Hover melhorado para o avatar no header do perfil */
+.profileHeader .profileAvatarContainer {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Indicador de edição mais elegante - usando ícone SVG ao invés de emoji */
+.profileHeader .profileAvatarContainer::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: linear-gradient(135deg, #0097B2, #06b6d4);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 151, 178, 0.4);
+  border: 2px solid white;
+  opacity: 0;
+  transform: scale(0.7) translateY(10px);
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z'/%3E%3C/svg%3E");
+  background-size: 16px 16px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.profileHeader .profileAvatarContainer:hover::after {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* Hover suave para o container principal */
+.profileHeader .profileAvatarContainer:hover {
+  transform: scale(1.02);
+}
+
+/* Efeito de brilho no hover */
+.profileHeader .profileAvatarContainer:hover .profileAvatarImage {
+  box-shadow: 0 12px 40px rgba(0, 151, 178, 0.35);
+}
+
+/* Estado de loading para upload */
+.photoButton.uploading {
+  position: relative;
+  color: transparent;
+}
+
+.photoButton.uploading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Drag and drop área */
+.photoDragArea {
+  border: 2px dashed rgba(0, 151, 178, 0.3);
+  border-radius: 16px;
+  padding: 30px;
+  margin: 20px 0;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(0, 151, 178, 0.02), rgba(6, 182, 212, 0.02));
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.photoDragArea:hover,
+.photoDragArea.dragOver {
+  border-color: #0097B2;
+  background: linear-gradient(135deg, rgba(0, 151, 178, 0.05), rgba(6, 182, 212, 0.05));
+  transform: translateY(-2px);
+}
+
+.photoDragText {
+  color: #64748b;
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.photoDragSubtext {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+/* Preview melhorado com informações do arquivo */
+.photoPreviewInfo {
+  margin-top: 15px;
+  padding: 15px;
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 151, 178, 0.1);
+}
+
+.photoFileName {
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 5px;
+}
+
+.photoFileSize {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+/* Indicador de progresso */
+.uploadProgress {
+  width: 100%;
+  height: 6px;
+  background: rgba(0, 151, 178, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 15px 0;
+}
+
+.uploadProgressBar {
+  height: 100%;
+  background: linear-gradient(90deg, #0097B2, #06b6d4);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+  animation: progressShimmer 2s infinite;
+}
+
+@keyframes progressShimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: 200px 0; }
+}
+
+/* Toast de notificação */
+.photoToast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+  z-index: 1200;
+  transform: translateX(400px);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.photoToast.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.photoToast.error {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+}
+
+/* Melhorias para telas muito pequenas */
+@media (max-width: 400px) {
+  .photoModalContent {
+    width: calc(100% - 20px);
+    margin: 10px;
+    padding: 20px 15px;
+  }
+
+  .photoModalButtons {
+    gap: 10px;
+  }
+
+  .photoButton {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .photoPreview, .photoPlaceholder {
+    width: 80px;
+    height: 80px;
+  }
+
+  .photoPlaceholder {
+    font-size: 2rem;
+  }
+
+  /* Ajuste do indicador de edição em telas pequenas */
+  .profileHeader .profileAvatarContainer::after {
+    width: 24px;
+    height: 24px;
+    bottom: 6px;
+    right: 6px;
+    background-size: 14px 14px;
+  }
+}
+
+/* Estados de erro */
+.photoError {
+  color: #ef4444;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1));
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 15px 0;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Animação de sucesso */
+.photoSuccess {
+  animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Efeito de glitch no avatar quando há erro */
+.profileAvatarError {
+  animation: glitch 0.3s infinite;
+}
+
+@keyframes glitch {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+/* Skeleton loading para quando está carregando dados */
+.profileAvatarSkeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Melhoria na acessibilidade - foco visível */
+.profileAvatarContainer:focus-visible {
+  outline: 3px solid #0097B2;
+  outline-offset: 4px;
+  border-radius: 50%;
+}
+
+.photoButton:focus-visible {
+  outline: 2px solid #0097B2;
+  outline-offset: 3px;
+}
+
+/* Alto contraste para melhor acessibilidade */
+@media (prefers-contrast: high) {
+  .profileAvatar,
+  .photoPlaceholder {
+    border: 4px solid #000;
+  }
+  
+  .photoButton {
+    border: 2px solid;
+  }
+}

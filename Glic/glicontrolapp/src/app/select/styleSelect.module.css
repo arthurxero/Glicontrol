@@ -1,0 +1,407 @@
+/* styleRefeicao.module.css */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Inter';
+  position: relative;
+}
+
+/* Header e Menu */
+.header {
+  height: 120px;
+  position: relative;
+  background: linear-gradient(to right, #e6f7fb, #d1f0f7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 25px 0 0 0;
+  box-shadow: 0 2px 15px rgba(0, 151, 178, 0.1);
+}
+
+.menuToggle {
+  position: fixed;
+  left: 20px;
+  top: 25px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
+  color: #2c3e50;
+  padding: 12px;
+  transition: all 0.25s ease-out;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.menuToggle:hover {
+  color: #0097B2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 151, 178, 0.2);
+}
+
+.menuToggle:active {
+  transform: translateY(1px);
+}
+
+/* Logo container com animação */
+.logoContainer {
+  padding-left: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.logoLoaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.logo {
+  max-width: 600px;
+  height: auto;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.02);
+}
+
+/* Sidebar Aprimorado */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 280px;
+  height: 100%;
+  background: linear-gradient(135deg, #ffffff, #f2f9fb);
+  z-index: 999;
+  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  border-right: 1px solid rgba(0, 151, 178, 0.1);
+}
+
+.sidebarOpen {
+  left: 0;
+}
+
+.sidebarNav {
+  padding: 90px 0 30px 0;
+}
+
+.sidebarMenu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebarItem {
+  margin: 8px 15px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.sidebarLink, .sidebarButton {
+  display: flex;
+  align-items: center;
+  padding: 16px 22px;
+  color: #2c3e50;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.sidebarIcon {
+  margin-right: 12px;
+  font-size: 18px;
+  color: #0097B2;
+  transition: all 0.3s ease;
+}
+
+.sidebarLink:hover, .sidebarButton:hover {
+  background-color: rgba(0, 151, 178, 0.1);
+  color: #0097B2;
+  transform: translateX(5px);
+}
+
+.sidebarLink:hover .sidebarIcon, 
+.sidebarButton:hover .sidebarIcon {
+  transform: scale(1.2);
+}
+
+/* Backdrop */
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 998;
+  backdrop-filter: blur(3px);
+  transition: opacity 0.3s ease;
+}
+
+/* Modal de Logout Aprimorado */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+  backdrop-filter: blur(5px);
+}
+
+.modalContent {
+  background-color: white;
+  padding: 35px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  max-width: 90%;
+  width: 400px;
+  text-align: center;
+  transform: scale(0.95);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.fadeIn {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.modalText {
+  font-size: 1.3rem;
+  margin-bottom: 30px;
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.modalButton {
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+  border: none;
+  font-size: 1rem;
+  min-width: 120px;
+}
+
+.confirmButton {
+  background-color: #e74c3c;
+  color: white;
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+.confirmButton:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(231, 76, 60, 0.4);
+}
+
+.cancelButton {
+  background-color: #7f8c8d;
+  color: white;
+  box-shadow: 0 4px 12px rgba(127, 140, 141, 0.3);
+}
+
+.cancelButton:hover {
+  background-color: #6c7a7d;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(127, 140, 141, 0.4);
+}
+
+.confirmButton:active, .cancelButton:active {
+  transform: translateY(1px);
+}
+
+
+/* Conteúdo Principal e Botões de Refeição */
+.mainContent {
+  padding: 20px;
+}
+
+.mealContainer {
+  max-width: 600px;
+  margin: 20px auto 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: #cecaca;
+  padding: 30px;
+  border-radius: 10px;
+}
+
+.mealButton {
+  background-color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 20px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #2c3e50;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  display: block;
+  width: 100%; /* Para garantir que o div dentro do Link tenha largura total */
+}
+
+.mealButton:hover {
+  background-color: #f8f8f8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: #0097B2;
+}
+
+.mealButton:active {
+  transform: translateY(0);
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .logo {
+    max-width: 500px;
+  }
+  
+  .mealContainer {
+    max-width: 550px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    height: 100px;
+    padding-top: 15px;
+  }
+
+  .menuToggle {
+    font-size: 24px;
+    top: 20px;
+  }
+
+  .logo {
+    max-width: 400px;
+  }
+
+  .mealContainer {
+    max-width: 450px;
+    padding: 25px;
+  }
+
+  .mealButton {
+    padding: 16px;
+    font-size: 1.1rem;
+  }
+
+  .sidebar {
+    width: 220px;
+  }
+
+  .sidebarLink, .sidebarButton {
+    padding: 14px 20px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .header {
+    height: 80px;
+  }
+
+  .menuToggle {
+    font-size: 20px;
+    top: 15px;
+    left: 10px;
+  }
+
+  .logo {
+    max-width: 280px;
+  }
+
+  .mealContainer {
+    max-width: 90%;
+    padding: 20px;
+  }
+
+  .mealButton {
+    padding: 14px;
+    font-size: 1rem;
+  }
+
+  .sidebar {
+    width: 200px;
+  }
+}
+
+@media (max-width: 400px) {
+  .logo {
+    max-width: 220px;
+  }
+  
+  .sidebar {
+    width: 180px;
+  }
+  
+  .mealContainer {
+    padding: 15px;
+  }
+}
+/* Ajustes para o container principal */
+.container {
+  overflow-x: hidden; /* Impede rolagem horizontal */
+}
+
+/* Garante que o mainContent fique abaixo da logo */
+.mainContent {
+  position: relative;
+  z-index: 1;
+  padding-top: 20px;
+}
+
+/* Ajuste fino para os botões */
+.mealContainer {
+  margin-top: 40px !important;
+}
+
+    
+
+/* Ajuste do container dos botões */
+.mealContainer {
+  margin-top: 40px !important; /* Empurra os botões para baixo */
+  position: relative;
+  top: 0;
+}

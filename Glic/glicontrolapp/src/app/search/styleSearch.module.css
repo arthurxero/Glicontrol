@@ -1,0 +1,662 @@
+/* styleSearch.module.css */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
+  background-color: #f9fcfd;
+  min-height: 100vh;
+}
+
+/* Header e Menu */
+.header {
+  height: 120px;
+  position: relative;
+  background: linear-gradient(to right, #e6f7fb, #d1f0f7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 25px 0 0 0;
+  box-shadow: 0 2px 15px rgba(0, 151, 178, 0.1);
+}
+
+.menuToggle {
+  position: fixed;
+  left: 20px;
+  top: 25px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
+  color: #2c3e50;
+  padding: 12px;
+  transition: all 0.25s ease-out;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.menuToggle:hover {
+  color: #0097B2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 151, 178, 0.2);
+}
+
+.menuToggle:active {
+  transform: translateY(1px);
+}
+
+/* Logo container com animação */
+.logoContainer {
+  padding-left: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.logoLoaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.logo {
+  max-width: 600px;
+  height: auto;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.02);
+}
+
+/* Sidebar Aprimorado */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 280px;
+  height: 100%;
+  background: linear-gradient(135deg, #ffffff, #f2f9fb);
+  z-index: 999;
+  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  border-right: 1px solid rgba(0, 151, 178, 0.1);
+}
+
+.sidebarOpen {
+  left: 0;
+}
+
+.sidebarNav {
+  padding: 90px 0 30px 0;
+}
+
+.sidebarMenu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebarItem {
+  margin: 8px 15px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.sidebarLink, .sidebarButton {
+  display: flex;
+  align-items: center;
+  padding: 16px 22px;
+  color: #2c3e50;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.sidebarIcon {
+  margin-right: 12px;
+  font-size: 18px;
+  color: #0097B2;
+  transition: all 0.3s ease;
+}
+
+.sidebarLink:hover, .sidebarButton:hover {
+  background-color: rgba(0, 151, 178, 0.1);
+  color: #0097B2;
+  transform: translateX(5px);
+}
+
+.sidebarLink:hover .sidebarIcon, 
+.sidebarButton:hover .sidebarIcon {
+  transform: scale(1.2);
+}
+
+/* Backdrop */
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 998;
+  backdrop-filter: blur(3px);
+  transition: opacity 0.3s ease;
+}
+
+/* Modal de Logout Aprimorado */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+  backdrop-filter: blur(5px);
+}
+
+.modalContent {
+  background-color: white;
+  padding: 35px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  max-width: 90%;
+  width: 400px;
+  text-align: center;
+  transform: scale(0.95);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.fadeIn {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.modalText {
+  font-size: 1.3rem;
+  margin-bottom: 30px;
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.modalButton {
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+  border: none;
+  font-size: 1rem;
+  min-width: 120px;
+}
+
+.confirmButton {
+  background-color: #e74c3c;
+  color: white;
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+.confirmButton:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(231, 76, 60, 0.4);
+}
+
+.cancelButton {
+  background-color: #7f8c8d;
+  color: white;
+  box-shadow: 0 4px 12px rgba(127, 140, 141, 0.3);
+}
+
+.cancelButton:hover {
+  background-color: #6c7a7d;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(127, 140, 141, 0.4);
+}
+
+.confirmButton:active, .cancelButton:active {
+  transform: translateY(1px);
+}
+
+/* Main Content com animação */
+.mainContent {
+  padding: 0 20px 40px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.contentLoaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Título da Seção */
+.sectionTitle {
+  font-size: 2.2rem;
+  color: #2c3e50;
+  margin: 40px 0;
+  text-align: center;
+  font-weight: 600;
+  position: relative;
+  display: inline-block;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.sectionTitle:after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: #0097B2;
+  margin: 10px auto 0;
+  border-radius: 2px;
+}
+
+/* Componentes de pesquisa */
+.searchContainer {
+  max-width: 900px;
+  margin: 20px auto 40px;
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+  border: 1px solid #f0f0f0;
+  padding: 25px;
+}
+
+.searchInputWrapper {
+  position: relative;
+  margin-bottom: 25px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 16px 50px 16px 20px;
+  border-radius: 50px;
+  border: 2px solid #e0e0e0;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  color: #2c3e50;
+  background-color: #f9fcfd;
+  outline: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.searchInput:focus {
+  border-color: #0097B2;
+  box-shadow: 0 4px 15px rgba(0, 151, 178, 0.15);
+}
+
+.searchIcon {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #7f8c8d;
+  font-size: 1.2rem;
+  opacity: 0.8;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 151, 178, 0.1);
+  border-left: 4px solid #0097B2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loadingText {
+  color: #2c3e50;
+  font-size: 1.1rem;
+  opacity: 0.7;
+}
+
+.noResults {
+  text-align: center;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 10px;
+  background-color: #f9fcfd;
+  border: 1px dashed #e0e0e0;
+  margin: 15px 0 30px;
+}
+
+.noResults p {
+  color: #2c3e50;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+}
+
+.sadFace {
+  font-size: 2rem;
+  opacity: 0.8;
+}
+
+.resultsContainer {
+  margin-top: 10px;
+}
+
+.resultsTitle {
+  color: #2c3e50;
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e6f7fb;
+  padding-bottom: 10px;
+  font-weight: 600;
+}
+
+.resultsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.resultItem {
+  padding: 15px 20px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  background-color: #f9fcfd;
+  border: 1px solid #e6f7fb;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.resultItem:hover {
+  background-color: #e6f7fb;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 151, 178, 0.1);
+  border-color: #d1f0f7;
+}
+
+.foodName {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.foodInfo {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.nutrientTag {
+  background-color: #fff;
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #e0e0e0;
+  transition: all 0.2s ease;
+}
+
+.resultItem:hover .nutrientTag {
+  border-color: #b3e0e5;
+}
+
+.nutrientLabel {
+  font-weight: 600;
+  color: #0097B2;
+  margin-right: 4px;
+}
+
+.nutrientValue {
+  color: #2c3e50;
+}
+
+.searchTips {
+  margin-top: 40px;
+  background-color: #f8fdff;
+  border-radius: 10px;
+  padding: 20px;
+  border: 1px solid #d1f0f7;
+}
+
+.tipsTitle {
+  font-size: 1.2rem;
+  color: #0097B2;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.tipsList {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.tipsList li {
+  margin-bottom: 8px;
+  color: #2c3e50;
+  opacity: 0.9;
+}
+
+/* ========== RESPONSIVIDADE ========== */
+@media (max-width: 1024px) {
+  .logo {
+    max-width: 500px;
+  }
+  
+  .sectionTitle {
+    font-size: 2rem;
+  }
+  
+  .searchContainer {
+    max-width: 800px;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    height: 100px;
+    padding-top: 15px;
+  }
+
+  .menuToggle {
+    font-size: 20px;
+    top: 18px;
+    left: 15px;
+    width: 42px;
+    height: 42px;
+  }
+
+  .logo {
+    max-width: 400px;
+  }
+
+  .sectionTitle {
+    font-size: 1.8rem;
+  }
+  
+  .sectionTitle:after {
+    width: 50px;
+    height: 3px;
+  }
+  
+  .sidebar {
+    width: 250px;
+  }
+
+  .sidebarLink, .sidebarButton {
+    padding: 14px 20px;
+    font-size: 0.95rem;
+  }
+  
+  .searchInput {
+    padding: 14px 50px 14px 16px;
+    font-size: 1rem;
+  }
+  
+  .foodName {
+    font-size: 1.1rem;
+  }
+  
+  .nutrientTag {
+    padding: 4px 10px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .header {
+    height: 80px;
+  }
+
+  .menuToggle {
+    font-size: 18px;
+    top: 12px;
+    left: 12px;
+    width: 38px;
+    height: 38px;
+  }
+
+  .logo {
+    max-width: 280px;
+  }
+
+  .sectionTitle {
+    font-size: 1.6rem;
+    margin: 30px 0;
+  }
+  
+  .sectionTitle:after {
+    width: 40px;
+  }
+
+  .searchContainer {
+    padding: 15px;
+    margin: 15px auto 30px;
+  }
+  
+  .searchInput {
+    padding: 12px 40px 12px 15px;
+    font-size: 0.95rem;
+  }
+  
+  .searchIcon {
+    right: 15px;
+    font-size: 1rem;
+  }
+  
+  .resultItem {
+    padding: 12px 15px;
+  }
+  
+  .foodName {
+    font-size: 1rem;
+  }
+  
+  .foodInfo {
+    gap: 10px;
+  }
+  
+  .nutrientTag {
+    padding: 3px 8px;
+    font-size: 0.8rem;
+  }
+
+  .sidebar {
+    width: 220px;
+  }
+  
+  .tipsTitle {
+    font-size: 1.1rem;
+  }
+  
+  .tipsList li {
+    font-size: 0.9rem;
+  }
+  
+  .noResults p {
+    font-size: 1.1rem;
+  }
+  
+  .loadingText {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .logo {
+    max-width: 220px;
+  }
+  
+  .sidebar {
+    width: 200px;
+  }
+  
+  .searchInput {
+    padding: 10px 40px 10px 15px;
+  }
+  
+  .foodName {
+    font-size: 0.95rem;
+  }
+  
+  .foodInfo {
+    gap: 6px;
+  }
+  
+  .nutrientTag {
+    padding: 2px 6px;
+    font-size: 0.75rem;
+  }
+  
+  .resultsTitle {
+    font-size: 1.2rem;
+  }
+}
