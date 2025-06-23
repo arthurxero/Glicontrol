@@ -106,8 +106,8 @@ export default function ColetaDados() {
         updatedAt: new Date()
       });
 
-      // Redirecionar para página de informações
-      router.push('/informations');
+      // Redirecionar para dashboard ou página principal
+      router.push('/dashboard');
 
     } catch (error: any) {
       console.error('Erro ao salvar dados:', error);
@@ -136,7 +136,7 @@ export default function ColetaDados() {
   return (
     <div className={styles.container}>
       <div className={styles.backButtonContainer}>
-        <Link href="/informations" className={styles.backButton}>
+        <Link href="/dashboard" className={styles.backButton}>
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
@@ -204,7 +204,7 @@ export default function ColetaDados() {
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20,6 9,17 4,12" />
                   </svg>
-                  <span>Prosseguir</span>
+                  <span>Salvar e continuar</span>
                 </>
               )}
             </button>
@@ -213,7 +213,7 @@ export default function ColetaDados() {
         
         <div className={styles.loginPrompt}>
           <p>Você pode pular esta etapa e completar depois</p>
-          <Link href="/informations" className={styles.loginLink}>
+          <Link href="/dashboard" className={styles.loginLink}>
             Pular por agora
           </Link>
         </div>
