@@ -660,3 +660,110 @@
     font-size: 1.2rem;
   }
 }
+/* Adicione estes estilos ao seu arquivo styleSearch.module.css */
+
+/* Contador de resultados */
+.resultsCounter {
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.resultsCounter p {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Botão carregar mais */
+.loadMoreContainer {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.loadMoreButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.loadMoreButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.loadMoreButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Sugestão de pesquisa */
+.searchSuggestion {
+  color: #888;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* Melhorar o spinner de loading */
+.loadingSpinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #667eea;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsividade para o contador */
+@media (max-width: 768px) {
+  .resultsCounter p {
+    font-size: 0.8rem;
+    padding: 0 1rem;
+  }
+  
+  .loadMoreButton {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Melhorar aparência dos itens de comida */
+.resultItem {
+  transition: all 0.2s ease;
+}
+
+.resultItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Animação para novos itens */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.resultItem {
+  animation: fadeInUp 0.3s ease forwards;
+}

@@ -3,9 +3,9 @@ import styles from './styleSearch.module.css';
 import Link from 'next/link';
 import Image from 'next/image';
 import glicontrolLogo from '@/assets/glicontrol.png';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { collection, getDocs, query, where, orderBy, limit, startAt, endAt } from 'firebase/firestore';
+import { collection, getDocs, query, limit, startAfter, orderBy } from 'firebase/firestore';
 import { db } from '../../services/firebaseConfig';
 
 // Interface para os alimentos da tabela TACO
@@ -34,186 +34,219 @@ interface Food {
   unidadePorcao?: string;
 }
 
+const ITEMS_PER_PAGE = 50;
+
 export default function Pesquisa() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showExitModal, setShowExitModal] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState<Food[]>([]);
+  const [allFoods, setAllFoods] = useState<Food[]>([]);
+  const [filteredFoods, setFilteredFoods] = useState<Food[]>([]);
+  const [displayedFoods, setDisplayedFoods] = useState<Food[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [recentFoods, setRecentFoods] = useState<Food[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
+  const [lastDoc, setLastDoc] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
   const router = useRouter();
 
-  // Função para verificar se um objeto está vazio
-  const isEmptyObject = (obj: any) => {
-    return obj && Object.keys(obj).length === 0 && obj.constructor === Object;
+  // Função para normalizar e extrair nome do alimento
+  const extractFoodName = (data: any): string => {
+    const possibleNames = [
+      data['Descrição dos alimentos'],
+      data['descricao'],
+      data['Descricao dos alimentos'],
+      data['descricao_dos_alimentos'],
+      data['Descrição'],
+      data.descricao,
+      data.nome,
+      data.name
+    ];
+    
+    return possibleNames.find(name => name && typeof name === 'string' && name.trim() !== '') || "Alimento sem nome";
   };
 
-  // Efeito para animar a entrada dos elementos
-  useEffect(() => {
-    setIsLoaded(true);
-  }, []);
-
-  // Debug para exibir informações sobre a coleção
-  useEffect(() => {
-    const checkCollection = async () => {
-      try {
-        console.log("Verificando coleção tabela_taco...");
-        const foodsRef = collection(db, 'tabela_taco');
-        const snapshot = await getDocs(foodsRef);
-        
-        if (snapshot.empty) {
-          console.log("A coleção está vazia!");
-        } else {
-          console.log(`A coleção tem ${snapshot.size} documentos.`);
-          const firstDoc = snapshot.docs[0];
-          console.log("Primeiro documento ID:", firstDoc.id);
-          const data = firstDoc.data();
-          console.log("Estrutura do primeiro documento:", data);
-          console.log("Campos disponíveis:", Object.keys(data));
-          
-          if (isEmptyObject(data)) {
-            console.log("ATENÇÃO: O documento existe mas não tem dados!");
-          }
+  // Função para extrair dados nutricionais com múltiplas tentativas
+  const extractNutrientValue = (data: any, nutrientKeys: string[]): number => {
+    for (const key of nutrientKeys) {
+      const value = data[key];
+      if (value !== undefined && value !== null && value !== '') {
+        const numValue = parseFloat(value.toString().replace(',', '.'));
+        if (!isNaN(numValue)) {
+          return numValue;
         }
-      } catch (error) {
-        console.error("Erro ao verificar coleção:", error);
       }
-    };
+    }
+    return 0;
+  };
+
+  // Função para converter documento Firestore em objeto Food
+  const documentToFood = (doc: any): Food => {
+    const data = doc.data();
+    const nome = extractFoodName(data);
     
-    checkCollection();
-  }, []);
-
-  // Carrega os alimentos mais comuns/recentes ao iniciar
-  useEffect(() => {
-    const fetchInitialFoods = async () => {
-      try {
-        setIsLoading(true);
-        const foodsRef = collection(db, 'tabela_taco');
-        // Buscamos todos os documentos sem ordenação para diagnóstico
-        const q = query(foodsRef, limit(20));
-        const querySnapshot = await getDocs(q);
-        
-        console.log("Total de documentos encontrados:", querySnapshot.size);
-        
-        const fetchedFoods: Food[] = [];
-        querySnapshot.forEach((doc) => {
-          // Log para diagnóstico - visualizar os campos disponíveis
-          console.log("Documento ID:", doc.id);
-          console.log("Dados do documento:", doc.data());
-          
-          const data = doc.data();
-          // Tentando acessar campos com diferentes notações
-          const descricao = 
-            data['Descrição dos alimentos'] || 
-            data['descricao'] || 
-            data['Descricao dos alimentos'] ||
-            data['descricao_dos_alimentos'] ||
-            data['Descrição'] ||
-            data.descricao ||
-            "Alimento sem nome";
-            
-          fetchedFoods.push({
-            id: doc.id,
-            nome: descricao,
-            categoria: "Alimento",
-            carboidratos: parseFloat(data['Carboidrato (g)'] || data['carboidrato'] || data.carboidrato || data.carboidrato_g || 0),
-            proteinas: parseFloat(data['Proteína (g)'] || data['proteina'] || data.proteina || data.proteina_g || 0),
-            lipideos: parseFloat(data['Lipídeos (g)'] || data['lipideos'] || data.lipideos || data.lipideos_g || 0),
-            calorias: parseFloat(data['Energia (kcal)'] || data['energia_kcal'] || data.energia_kcal || 0),
-            energia_kj: parseFloat(data['Energia (kJ)'] || data['energia_kj'] || data.energia_kj || 0),
-            energia_kcal: parseFloat(data['Energia (kcal)'] || data['energia_kcal'] || data.energia_kcal || 0),
-            fibra_alimentar: parseFloat(data['Fibra Alimentar (g)'] || data['fibra_alimentar'] || data.fibra_alimentar || 0),
-            sodio: parseFloat(data['Sódio (mg)'] || data['sodio'] || data.sodio || 0),
-            colesterol: parseFloat(data['Colesterol (mg)'] || data['colesterol'] || data.colesterol || 0),
-            numero_alimento: parseFloat(data['Número do Alimento'] || data['numero_alimento'] || data.numero_alimento || 0),
-            descricao: descricao
-          });
-        });
-        
-        setRecentFoods(fetchedFoods);
-      } catch (error) {
-        console.error("Erro ao carregar alimentos iniciais:", error);
-      } finally {
-        setIsLoading(false);
-      }
+    return {
+      id: doc.id,
+      nome,
+      categoria: data.categoria || "Alimento",
+      carboidratos: extractNutrientValue(data, [
+        'Carboidrato (g)', 'carboidrato', 'carboidrato_g', 'Carboidrato'
+      ]),
+      proteinas: extractNutrientValue(data, [
+        'Proteína (g)', 'proteina', 'proteina_g', 'Proteína', 'Proteina'
+      ]),
+      lipideos: extractNutrientValue(data, [
+        'Lipídeos (g)', 'lipideos', 'lipideos_g', 'Lipídeos', 'Lipideos'
+      ]),
+      calorias: extractNutrientValue(data, [
+        'Energia (kcal)', 'energia_kcal', 'calorias', 'Energia'
+      ]),
+      energia_kj: extractNutrientValue(data, [
+        'Energia (kJ)', 'energia_kj'
+      ]),
+      energia_kcal: extractNutrientValue(data, [
+        'Energia (kcal)', 'energia_kcal'
+      ]),
+      fibra_alimentar: extractNutrientValue(data, [
+        'Fibra Alimentar (g)', 'fibra_alimentar', 'fibra'
+      ]),
+      sodio: extractNutrientValue(data, [
+        'Sódio (mg)', 'sodio', 'Sódio', 'Sodio'
+      ]),
+      colesterol: extractNutrientValue(data, [
+        'Colesterol (mg)', 'colesterol', 'Colesterol'
+      ]),
+      numero_alimento: extractNutrientValue(data, [
+        'Número do Alimento', 'numero_alimento', 'numero'
+      ]),
+      descricao: nome,
+      indiceGlicemico: extractNutrientValue(data, [
+        'indice_glicemico', 'ig', 'indiceGlicemico'
+      ]) || undefined
     };
+  };
 
-    fetchInitialFoods();
-  }, []);
-
-  // Efeito para pesquisar alimentos quando o termo é alterado
-  useEffect(() => {
-    const searchFoods = async () => {
-      if (searchTerm.trim() === '') {
-        setSearchResults([]);
-        setIsSearching(false);
+  // Função para carregar todos os alimentos (paginado)
+  const loadAllFoods = useCallback(async (isInitial = false) => {
+    if (!isInitial && !hasMore) return;
+    
+    try {
+      setIsLoading(true);
+      const foodsRef = collection(db, 'tabela_taco');
+      
+      let q;
+      if (isInitial || !lastDoc) {
+        // Primeira carga - buscar por número do alimento se disponível para ordenação consistente
+        q = query(foodsRef, limit(ITEMS_PER_PAGE * 3)); // Carregamos mais na primeira vez
+      } else {
+        q = query(foodsRef, startAfter(lastDoc), limit(ITEMS_PER_PAGE));
+      }
+      
+      const querySnapshot = await getDocs(q);
+      
+      if (querySnapshot.empty) {
+        setHasMore(false);
         return;
       }
-
-      setIsSearching(true);
       
-      try {
-        // Consulta ao Firestore
-        const foodsRef = collection(db, 'tabela_taco');
-        
-        // Como a busca exata por campo não está funcionando, vamos buscar todos e filtrar no código
-        const q = query(foodsRef, limit(100)); // Aumentamos o limite para ter mais resultados
-        
-        const querySnapshot = await getDocs(q);
-        console.log("Documentos na pesquisa:", querySnapshot.size);
-        
-        const fetchedFoods: Food[] = [];
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          
-          // Recuperamos a descrição com várias alternativas de nomes de campo
-          const descricao = 
-            data['Descrição dos alimentos'] || 
-            data['descricao'] || 
-            data['Descricao dos alimentos'] ||
-            data['descricao_dos_alimentos'] ||
-            data['Descrição'] ||
-            data.descricao ||
-            "";
-          
-          // Filtramos manualmente pela string de busca
-          if (descricao.toLowerCase().includes(searchTerm.toLowerCase())) {
-            fetchedFoods.push({
-              id: doc.id,
-              nome: descricao,
-              categoria: "Alimento",
-              carboidratos: parseFloat(data['Carboidrato (g)'] || data['carboidrato'] || data.carboidrato || data.carboidrato_g || 0),
-              proteinas: parseFloat(data['Proteína (g)'] || data['proteina'] || data.proteina || data.proteina_g || 0),
-              lipideos: parseFloat(data['Lipídeos (g)'] || data['lipideos'] || data.lipideos || data.lipideos_g || 0),
-              calorias: parseFloat(data['Energia (kcal)'] || data['energia_kcal'] || data.energia_kcal || 0),
-              energia_kj: parseFloat(data['Energia (kJ)'] || data['energia_kj'] || data.energia_kj || 0),
-              energia_kcal: parseFloat(data['Energia (kcal)'] || data['energia_kcal'] || data.energia_kcal || 0),
-              fibra_alimentar: parseFloat(data['Fibra Alimentar (g)'] || data['fibra_alimentar'] || data.fibra_alimentar || 0),
-              sodio: parseFloat(data['Sódio (mg)'] || data['sodio'] || data.sodio || 0),
-              colesterol: parseFloat(data['Colesterol (mg)'] || data['colesterol'] || data.colesterol || 0),
-              numero_alimento: parseFloat(data['Número do Alimento'] || data['numero_alimento'] || data.numero_alimento || 0),
-              descricao: descricao
-            });
-          }
+      const newFoods: Food[] = [];
+      querySnapshot.forEach((doc) => {
+        const food = documentToFood(doc);
+        // Filtrar alimentos com nome válido
+        if (food.nome && food.nome !== "Alimento sem nome") {
+          newFoods.push(food);
+        }
+      });
+      
+      if (isInitial) {
+        setAllFoods(newFoods);
+        setFilteredFoods(newFoods);
+        setDisplayedFoods(newFoods.slice(0, ITEMS_PER_PAGE));
+        setTotalCount(newFoods.length);
+      } else {
+        setAllFoods(prev => {
+          const combined = [...prev, ...newFoods];
+          // Remover duplicatas baseado no ID
+          const unique = combined.filter((food, index, self) => 
+            index === self.findIndex(f => f.id === food.id)
+          );
+          return unique;
         });
-        
-        setSearchResults(fetchedFoods);
-      } catch (error) {
-        console.error("Erro na pesquisa:", error);
-      } finally {
-        setIsSearching(false);
       }
-    };
+      
+      // Atualizar último documento para paginação
+      const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+      setLastDoc(lastVisible);
+      
+      // Se retornou menos documentos que o limite, não há mais para carregar
+      if (querySnapshot.docs.length < ITEMS_PER_PAGE) {
+        setHasMore(false);
+      }
+      
+      console.log(`Carregados ${newFoods.length} alimentos. Total: ${allFoods.length + newFoods.length}`);
+      
+    } catch (error) {
+      console.error("Erro ao carregar alimentos:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [hasMore, lastDoc, allFoods.length]);
 
-    // Debounce para evitar muitas requisições
+  // Carregar alimentos na inicialização
+  useEffect(() => {
+    setIsLoaded(true);
+    loadAllFoods(true);
+  }, []);
+
+  // Filtrar alimentos baseado no termo de busca
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setFilteredFoods(allFoods);
+      setDisplayedFoods(allFoods.slice(0, ITEMS_PER_PAGE));
+      setCurrentPage(0);
+      return;
+    }
+
+    setIsSearching(true);
+    
+    // Debounce para pesquisa
     const timer = setTimeout(() => {
-      searchFoods();
-    }, 500);
+      const filtered = allFoods.filter(food => 
+        food.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (food.categoria && food.categoria.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+      
+      setFilteredFoods(filtered);
+      setDisplayedFoods(filtered.slice(0, ITEMS_PER_PAGE));
+      setCurrentPage(0);
+      setIsSearching(false);
+    }, 300);
 
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
+    return () => {
+      clearTimeout(timer);
+      setIsSearching(false);
+    };
+  }, [searchTerm, allFoods]);
+
+  // Função para carregar mais resultados
+  const loadMoreResults = () => {
+    const nextPage = currentPage + 1;
+    const startIndex = nextPage * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    
+    const newItems = filteredFoods.slice(startIndex, endIndex);
+    setDisplayedFoods(prev => [...prev, ...newItems]);
+    setCurrentPage(nextPage);
+  };
+
+  // Função para carregar mais alimentos do Firestore
+  const loadMoreFromFirestore = () => {
+    if (!isLoading && hasMore) {
+      loadAllFoods(false);
+    }
+  };
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -236,21 +269,23 @@ export default function Pesquisa() {
   };
 
   const handleFoodSelect = (food: Food) => {
-    // Redireciona para a página de detalhes do alimento
     router.push(`/food/${food.id}`);
   };
 
   // Função para exibir macronutrientes formatados
   const formatNutrient = (value: number | undefined): string => {
-    if (value === undefined || value === null) return '-';
+    if (value === undefined || value === null || value === 0) return '-';
     return value.toFixed(1) + 'g';
   };
   
   // Função para exibir calorias formatadas
   const formatCalories = (value: number | undefined): string => {
-    if (value === undefined || value === null) return '-';
+    if (value === undefined || value === null || value === 0) return '-';
     return value.toFixed(0);
   };
+
+  const hasMoreToShow = displayedFoods.length < filteredFoods.length;
+  const showLoadMoreFirestore = !searchTerm && hasMore && displayedFoods.length >= allFoods.length * 0.8;
 
   return (
     <div className={styles.container}>
@@ -363,6 +398,19 @@ export default function Pesquisa() {
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
           </div>
+
+          {/* Contador de resultados */}
+          {!isLoading && (
+            <div className={styles.resultsCounter}>
+              <p>
+                {searchTerm ? (
+                  `${filteredFoods.length} alimentos encontrados para "${searchTerm}"`
+                ) : (
+                  `${allFoods.length} alimentos carregados da Tabela TACO${hasMore ? ' (carregando mais...)' : ''}`
+                )}
+              </p>
+            </div>
+          )}
           
           {isSearching && (
             <div className={styles.loadingContainer}>
@@ -371,18 +419,23 @@ export default function Pesquisa() {
             </div>
           )}
 
-          {!isSearching && searchTerm && searchResults.length === 0 && (
+          {!isSearching && searchTerm && filteredFoods.length === 0 && !isLoading && (
             <div className={styles.noResults}>
               <p>Nenhum alimento encontrado para "{searchTerm}"</p>
               <span className={styles.sadFace}>😕</span>
+              <p className={styles.searchSuggestion}>
+                Tente termos mais simples como "arroz", "feijão", "carne"
+              </p>
             </div>
           )}
 
-          {!isSearching && searchResults.length > 0 && (
+          {!isSearching && displayedFoods.length > 0 && (
             <div className={styles.resultsContainer}>
-              <h2 className={styles.resultsTitle}>Resultados da pesquisa</h2>
+              <h2 className={styles.resultsTitle}>
+                {searchTerm ? 'Resultados da pesquisa' : 'Todos os alimentos'}
+              </h2>
               <ul className={styles.resultsList}>
-                {searchResults.map((food: Food) => (
+                {displayedFoods.map((food: Food) => (
                   <li 
                     key={food.id} 
                     className={styles.resultItem}
@@ -408,7 +461,7 @@ export default function Pesquisa() {
                         <span className={styles.nutrientValue}>{formatCalories(food.calorias)}</span>
                       </span>
                     </div>
-                    {food.indiceGlicemico && (
+                    {food.indiceGlicemico && food.indiceGlicemico > 0 && (
                       <div className={styles.igInfo}>
                         <span className={`${styles.igBadge} ${
                           food.indiceGlicemico < 55 ? styles.igLow : 
@@ -422,56 +475,35 @@ export default function Pesquisa() {
                   </li>
                 ))}
               </ul>
-            </div>
-          )}
 
-          {!searchTerm && !isLoading && recentFoods.length > 0 && (
-            <div className={styles.recentFoodsContainer}>
-              <ul className={styles.resultsList}>
-                {recentFoods.map((food: Food) => (
-                  <li 
-                    key={food.id} 
-                    className={styles.resultItem}
-                    onClick={() => handleFoodSelect(food)}
+              {/* Botão para carregar mais resultados */}
+              {hasMoreToShow && (
+                <div className={styles.loadMoreContainer}>
+                  <button 
+                    className={styles.loadMoreButton}
+                    onClick={loadMoreResults}
                   >
-                    <div className={styles.foodName}>{food.nome}</div>
-                    <div className={styles.foodCategory}>{food.categoria || 'Alimento'}</div>
-                    <div className={styles.foodInfo}>
-                      <span className={styles.nutrientTag}>
-                        <span className={styles.nutrientLabel}>Carb:</span> 
-                        <span className={styles.nutrientValue}>{formatNutrient(food.carboidratos)}</span>
-                      </span>
-                      <span className={styles.nutrientTag}>
-                        <span className={styles.nutrientLabel}>Prot:</span> 
-                        <span className={styles.nutrientValue}>{formatNutrient(food.proteinas)}</span>
-                      </span>
-                      <span className={styles.nutrientTag}>
-                        <span className={styles.nutrientLabel}>Lip:</span> 
-                        <span className={styles.nutrientValue}>{formatNutrient(food.lipideos)}</span>
-                      </span>
-                      <span className={styles.nutrientTag}>
-                        <span className={styles.nutrientLabel}>Cal:</span> 
-                        <span className={styles.nutrientValue}>{formatCalories(food.calorias)}</span>
-                      </span>
-                    </div>
-                    {food.indiceGlicemico && (
-                      <div className={styles.igInfo}>
-                        <span className={`${styles.igBadge} ${
-                          food.indiceGlicemico < 55 ? styles.igLow : 
-                          food.indiceGlicemico < 70 ? styles.igMedium : 
-                          styles.igHigh
-                        }`}>
-                          IG: {food.indiceGlicemico}
-                        </span>
-                      </div>
-                    )}
-                  </li>
-                ))}
-              </ul>
+                    Carregar mais resultados ({displayedFoods.length} de {filteredFoods.length})
+                  </button>
+                </div>
+              )}
+
+              {/* Botão para carregar mais do Firestore */}
+              {showLoadMoreFirestore && (
+                <div className={styles.loadMoreContainer}>
+                  <button 
+                    className={styles.loadMoreButton}
+                    onClick={loadMoreFromFirestore}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Carregando...' : 'Carregar mais alimentos do banco'}
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
-          {isLoading && !searchTerm && (
+          {isLoading && displayedFoods.length === 0 && (
             <div className={styles.loadingContainer}>
               <div className={styles.loadingSpinner}></div>
               <p className={styles.loadingText}>Carregando tabela TACO...</p>
