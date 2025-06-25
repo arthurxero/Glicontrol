@@ -129,7 +129,7 @@ export default function Cadastro() {
         createdAt: new Date()
       });
 
-      router.push('/login');
+      router.push('/infos');
 
     } catch (error: any) {
       setError(translateFirebaseError(error.code));
@@ -217,7 +217,7 @@ export default function Cadastro() {
                   <span className={styles.buttonLoader}></span>
                   <span>Criando conta...</span>
                 </>
-              ) : 'Criar conta'}
+              ) : 'Prosseguir'}
             </button>
           </div>
         </form>

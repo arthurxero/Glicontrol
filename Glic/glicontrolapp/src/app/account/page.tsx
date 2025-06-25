@@ -6,9 +6,8 @@ import glicontrolLogo from '@/assets/glicontrol.png';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { auth, db, storage } from '../../services/firebaseConfig';
+import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../../services/firebaseConfig';
 
 interface UserData {
   nome: string;
@@ -16,11 +15,11 @@ interface UserData {
   email: string;
   dataNascimento: string;
   altura: string;
-  peso: number;
+  peso: string;
   idade: string;
-  fatorInsulina: number;
-  glicemiaAlvo: number;
-  photoURL?: string; // Usado internamente para exibir a foto, mapeado de fotoPerfil
+  fatorInsulina: string;
+  glicemiaAlvo: string;
+  fotoPerfil?: string;
 }
 
 interface DailyRecord {
@@ -42,6 +41,8 @@ export default function Profile() {
   const [uploading, setUploading] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState<string>('');
+  const [showUrlInput, setShowUrlInput] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -53,57 +54,75 @@ export default function Profile() {
       if (currentUser) {
         setUser(currentUser);
         try {
-          console.log('Buscando dados para o usuário:', currentUser.uid);
+          console.log('=== INÍCIO BUSCA DE DADOS ===');
+          console.log('UID do usuário:', currentUser.uid);
           
-          // Primeiro, tentar buscar dados do documento principal do usuário
+          // Buscar dados do documento principal (users/{uid})
+          console.log('Buscando documento principal...');
           const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
           let mainUserData: any = {};
           
           if (userDoc.exists()) {
             mainUserData = userDoc.data();
-            console.log('Dados do documento principal:', mainUserData);
+            console.log('✅ Documento principal encontrado:', mainUserData);
+          } else {
+            console.log('❌ Documento principal NÃO encontrado');
           }
 
-          // Buscar dados do perfil/dados
-          const perfilDoc = await getDoc(doc(db, 'users', currentUser.uid, 'perfil', 'dados'));
-          let perfilData: any = {};
-          
-          if (perfilDoc.exists()) {
-            perfilData = perfilDoc.data();
-            console.log('Dados do perfil:', perfilData);
-          }
-
-          // Buscar dados da coleção 'dados' (baseado na estrutura mostrada no Firestore)
+          // Buscar dados do documento dados/dados
+          console.log('Buscando documento dados/dados...');
           const dadosDoc = await getDoc(doc(db, 'users', currentUser.uid, 'dados', 'dados'));
           let dadosData: any = {};
           
           if (dadosDoc.exists()) {
             dadosData = dadosDoc.data();
-            console.log('Dados da coleção dados:', dadosData);
+            console.log('✅ Documento dados/dados encontrado:', dadosData);
+          } else {
+            console.log('❌ Documento dados/dados NÃO encontrado');
+          }
+
+          // Buscar dados do documento perfil/dados (backup)
+          console.log('Buscando documento perfil/dados...');
+          const perfilDoc = await getDoc(doc(db, 'users', currentUser.uid, 'perfil', 'dados'));
+          let perfilData: any = {};
+          
+          if (perfilDoc.exists()) {
+            perfilData = perfilDoc.data();
+            console.log('✅ Documento perfil/dados encontrado:', perfilData);
+          } else {
+            console.log('❌ Documento perfil/dados NÃO encontrado');
           }
           
-          // Combinar todos os dados disponíveis, priorizando dados mais específicos
+          // Combinar os dados, priorizando o documento dados/dados
           const combinedData = {
             nome: dadosData.nome || perfilData.nome || mainUserData.nome || '',
             sobrenome: dadosData.sobrenome || perfilData.sobrenome || mainUserData.sobrenome || '',
             email: dadosData.email || perfilData.email || mainUserData.email || currentUser.email || '',
             dataNascimento: dadosData.dataNascimento || perfilData.dataNascimento || mainUserData.dataNascimento || '',
             altura: dadosData.altura || perfilData.altura || mainUserData.altura || '',
-            peso: dadosData.peso || perfilData.peso || mainUserData.peso || 0,
+            peso: dadosData.peso || perfilData.peso || mainUserData.peso || '',
             idade: dadosData.idade || perfilData.idade || mainUserData.idade || '',
-            fatorInsulina: dadosData.fatorInsulina || perfilData.fatorInsulina || mainUserData.fatorInsulina || 0,
-            glicemiaAlvo: dadosData.glicemiaAlvo || perfilData.glicemiaAlvo || mainUserData.glicemiaAlvo || 0,
-            // Priorizar fotoPerfil do Firestore, depois photoURL
-            photoURL: dadosData.fotoPerfil || dadosData.photoURL || perfilData.photoURL || mainUserData.photoURL || currentUser.photoURL || '',
+            fatorInsulina: dadosData.fatorInsulina || perfilData.fatorInsulina || mainUserData.fatorInsulina || '',
+            glicemiaAlvo: dadosData.glicemiaAlvo || perfilData.glicemiaAlvo || mainUserData.glicemiaAlvo || '',
+            fotoPerfil: dadosData.fotoPerfil || perfilData.fotoPerfil || mainUserData.fotoPerfil || '',
           };
           
+          console.log('=== DADOS FINAIS COMBINADOS ===');
+          console.log('Nome:', combinedData.nome);
+          console.log('Sobrenome:', combinedData.sobrenome);
+          console.log('Altura:', combinedData.altura);
+          console.log('Peso:', combinedData.peso);
+          console.log('Idade:', combinedData.idade);
+          console.log('Foto:', combinedData.fotoPerfil);
+          console.log('================================');
+          
           setUserData(combinedData as UserData);
-          console.log('Dados combinados finais:', combinedData);
           
         } catch (error) {
-          console.error('Erro ao buscar dados do usuário:', error);
+          console.error('❌ ERRO ao buscar dados do usuário:', error);
         }
       } else {
+        console.log('❌ Usuário não autenticado, redirecionando...');
         router.push('/login');
       }
       setLoading(false);
@@ -112,12 +131,32 @@ export default function Profile() {
     return () => unsubscribe();
   }, [router]);
 
+  // Função para converter arquivo para Base64
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
+  };
+
+  // Função para validar URL de imagem
+  const validateImageUrl = (url: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      const img = new window.Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = url;
+    });
+  };
+
   // Funções para o sistema de foto de perfil
   const handlePhotoClick = () => {
     setShowPhotoModal(true);
   };
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       // Verificar tipo de arquivo
@@ -126,77 +165,138 @@ export default function Profile() {
         return;
       }
 
-      // Verificar tamanho do arquivo (máximo 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('A imagem deve ter no máximo 5MB.');
+      // Verificar tamanho do arquivo (máximo 2MB para Base64)
+      if (file.size > 2 * 1024 * 1024) {
+        alert('A imagem deve ter no máximo 2MB para upload direto.');
         return;
       }
 
       setSelectedFile(file);
       
-      // Criar preview da imagem
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setPhotoPreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+      try {
+        // Converter para Base64 para preview
+        const base64String = await convertToBase64(file);
+        setPhotoPreview(base64String);
+      } catch (error) {
+        console.error('Erro ao converter imagem:', error);
+        alert('Erro ao processar a imagem.');
+      }
     }
   };
 
-  const handleUploadPhoto = async () => {
-    if (!selectedFile || !user) return;
+  const handleUrlInput = () => {
+    setShowUrlInput(true);
+    setSelectedFile(null);
+    setPhotoPreview(null);
+  };
+
+  const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setImageUrl(event.target.value);
+  };
+
+  const handleUrlPreview = async () => {
+    if (!imageUrl.trim()) {
+      alert('Por favor, digite uma URL válida.');
+      return;
+    }
+
+    try {
+      const isValid = await validateImageUrl(imageUrl);
+      if (isValid) {
+        setPhotoPreview(imageUrl);
+        setSelectedFile(null);
+      } else {
+        alert('URL inválida ou imagem não encontrada.');
+      }
+    } catch (error) {
+      alert('Erro ao validar a URL da imagem.');
+    }
+  };
+
+  const handleSavePhoto = async () => {
+    if (!user) {
+      alert('Usuário não encontrado');
+      return;
+    }
+
+    let photoDataToSave = '';
+
+    // Se tem arquivo selecionado, converter para Base64
+    if (selectedFile) {
+      try {
+        photoDataToSave = await convertToBase64(selectedFile);
+      } catch (error) {
+        console.error('Erro ao converter arquivo:', error);
+        alert('Erro ao processar a imagem.');
+        return;
+      }
+    }
+    // Se tem URL, usar a URL
+    else if (imageUrl.trim()) {
+      const isValid = await validateImageUrl(imageUrl);
+      if (!isValid) {
+        alert('URL da imagem é inválida.');
+        return;
+      }
+      photoDataToSave = imageUrl.trim();
+    }
+    // Se tem preview (de URL), usar o preview
+    else if (photoPreview) {
+      photoDataToSave = photoPreview;
+    }
+
+    if (!photoDataToSave) {
+      alert('Nenhuma imagem selecionada.');
+      return;
+    }
+
+    console.log('=== INÍCIO SALVAMENTO FOTO ===');
+    console.log('Usuário:', user.uid);
+    console.log('Tipo de dados:', selectedFile ? 'Arquivo Base64' : 'URL');
 
     setUploading(true);
     try {
-      // Criar referência para o arquivo no Storage
-      const photoRef = ref(storage, `profile-photos/${user.uid}/${Date.now()}_${selectedFile.name}`);
+      // Atualizar Firestore
+      console.log('Atualizando Firestore...');
       
-      // Upload do arquivo
-      const snapshot = await uploadBytes(photoRef, selectedFile);
+      const updateData = {
+        fotoPerfil: photoDataToSave,
+        fotoPerfilUpdatedAt: new Date().toISOString()
+      };
       
-      // Obter URL de download
-      const photoURL = await getDownloadURL(snapshot.ref);
-      
-      // Atualizar em múltiplas localizações no Firestore para garantir consistência
-      const updatePromises = [];
-      
-      // Atualizar documento principal do usuário
-      updatePromises.push(
-        updateDoc(doc(db, 'users', user.uid), {
-          photoURL: photoURL
-        }).catch(error => console.log('Erro ao atualizar documento principal:', error))
-      );
-      
-      // Atualizar documento de perfil
-      updatePromises.push(
-        updateDoc(doc(db, 'users', user.uid, 'perfil', 'dados'), {
-          photoURL: photoURL
-        }).catch(error => console.log('Erro ao atualizar perfil:', error))
-      );
-      
-      // Atualizar documento de dados (que é o que você mostrou no Firestore)
-      // Usamos apenas 'fotoPerfil' aqui, conforme seu screenshot
-      updatePromises.push(
-        updateDoc(doc(db, 'users', user.uid, 'dados', 'dados'), {
-          fotoPerfil: photoURL,
-        }).catch(error => console.log('Erro ao atualizar dados:', error))
-      );
+      // Atualizar documento dados/dados (principal)
+      try {
+        const dadosDocRef = doc(db, 'users', user.uid, 'dados', 'dados');
+        await setDoc(dadosDocRef, updateData, { merge: true });
+        console.log('✅ Documento dados/dados atualizado');
+      } catch (error) {
+        console.log('❌ Erro ao atualizar dados/dados:', error);
+      }
 
-      // Executar todas as atualizações
-      await Promise.all(updatePromises);
+      // Backup: Atualizar documento principal
+      try {
+        const userDocRef = doc(db, 'users', user.uid);
+        await setDoc(userDocRef, updateData, { merge: true });
+        console.log('✅ Documento principal atualizado');
+      } catch (error) {
+        console.log('❌ Erro ao atualizar documento principal:', error);
+      }
 
       // Atualizar estado local
-      setUserData(prev => prev ? { ...prev, photoURL } : null);
+      setUserData(prev => prev ? { ...prev, fotoPerfil: photoDataToSave } : null);
       
       // Fechar modal e limpar estados
       setShowPhotoModal(false);
       setPhotoPreview(null);
       setSelectedFile(null);
+      setImageUrl('');
+      setShowUrlInput(false);
       
+      console.log('=== SALVAMENTO CONCLUÍDO COM SUCESSO ===');
       alert('Foto de perfil atualizada com sucesso!');
       
     } catch (error) {
-      console.error('Erro ao fazer upload da foto:', error);
+      console.error('❌ ERRO COMPLETO no salvamento:', error);
       alert('Erro ao atualizar foto de perfil. Tente novamente.');
     } finally {
       setUploading(false);
@@ -204,56 +304,43 @@ export default function Profile() {
   };
 
   const handleRemovePhoto = async () => {
-    if (!user || !userData?.photoURL) return;
+    if (!user) return;
 
+    setUploading(true);
     try {
-      // Remover foto do Storage
-      if (userData.photoURL.includes('firebase') || userData.photoURL.includes('storage.googleapis')) {
-        try {
-          const photoRef = ref(storage, userData.photoURL);
-          await deleteObject(photoRef);
-        } catch (storageError) {
-          console.log('Erro ao deletar do Storage (pode já ter sido deletada ou não é do Firebase Storage):', storageError);
-        }
+      // Remover URL dos documentos
+      const removeData = {
+        fotoPerfil: '',
+        fotoPerfilRemovedAt: new Date().toISOString()
+      };
+
+      // Remover do documento dados/dados
+      try {
+        await setDoc(doc(db, 'users', user.uid, 'dados', 'dados'), removeData, { merge: true });
+        console.log('✅ Referência removida do dados/dados');
+      } catch (error) {
+        console.log('❌ Erro ao atualizar dados/dados:', error);
       }
 
-      // Remover URL de múltiplas localizações no Firestore
-      const updatePromises = [];
-      
-      // Atualizar documento principal do usuário
-      updatePromises.push(
-        updateDoc(doc(db, 'users', user.uid), {
-          photoURL: ''
-        }).catch(error => console.log('Erro ao atualizar documento principal:', error))
-      );
-      
-      // Atualizar documento de perfil
-      updatePromises.push(
-        updateDoc(doc(db, 'users', user.uid, 'perfil', 'dados'), {
-          photoURL: ''
-        }).catch(error => console.log('Erro ao atualizar perfil:', error))
-      );
-      
-      // Atualizar documento de dados
-      // Usamos apenas 'fotoPerfil' aqui, conforme seu screenshot
-      updatePromises.push(
-        updateDoc(doc(db, 'users', user.uid, 'dados', 'dados'), {
-          fotoPerfil: '',
-        }).catch(error => console.log('Erro ao atualizar dados:', error))
-      );
-
-      // Executar todas as atualizações
-      await Promise.all(updatePromises);
+      // Remover do documento principal
+      try {
+        await setDoc(doc(db, 'users', user.uid), removeData, { merge: true });
+        console.log('✅ Referência removida do documento principal');
+      } catch (error) {
+        console.log('❌ Erro ao atualizar documento principal:', error);
+      }
 
       // Atualizar estado local
-      setUserData(prev => prev ? { ...prev, photoURL: '' } : null);
+      setUserData(prev => prev ? { ...prev, fotoPerfil: '' } : null);
       
       setShowPhotoModal(false);
       alert('Foto de perfil removida com sucesso!');
       
     } catch (error) {
-      console.error('Erro ao remover foto:', error);
+      console.error('❌ Erro ao remover foto:', error);
       alert('Erro ao remover foto de perfil. Tente novamente.');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -261,6 +348,8 @@ export default function Profile() {
     setShowPhotoModal(false);
     setPhotoPreview(null);
     setSelectedFile(null);
+    setImageUrl('');
+    setShowUrlInput(false);
   };
 
   const toggleMenu = () => {
@@ -389,11 +478,15 @@ export default function Profile() {
                   alt="Preview da foto" 
                   className={styles.photoPreview}
                 />
-              ) : userData?.photoURL ? (
+              ) : userData?.fotoPerfil ? (
                 <img 
-                  src={userData.photoURL} 
+                  src={userData.fotoPerfil} 
                   alt="Foto atual" 
                   className={styles.photoPreview}
+                  onError={(e) => {
+                    console.log('Erro ao carregar imagem, usando avatar padrão');
+                    e.currentTarget.style.display = 'none';
+                  }}
                 />
               ) : (
                 <div className={styles.photoPlaceholder}>
@@ -410,32 +503,59 @@ export default function Profile() {
               style={{ display: 'none' }}
             />
 
+            {showUrlInput && (
+              <div className={styles.urlInputContainer}>
+                <input
+                  type="url"
+                  placeholder="Digite a URL da imagem..."
+                  value={imageUrl}
+                  onChange={handleUrlChange}
+                  className={styles.urlInput}
+                />
+                <button 
+                  className={styles.urlPreviewButton}
+                  onClick={handleUrlPreview}
+                  disabled={uploading || !imageUrl.trim()}
+                >
+                  Preview
+                </button>
+              </div>
+            )}
+
             <div className={styles.photoModalButtons}>
               <button 
                 className={styles.photoButton}
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
               >
-                Escolher Foto
+                 Escolher Arquivo
               </button>
               
-              {selectedFile && (
+              <button 
+                className={styles.photoButton}
+                onClick={handleUrlInput}
+                disabled={uploading}
+              >
+                 URL da Imagem
+              </button>
+              
+              {(selectedFile || photoPreview) && (
                 <button 
                   className={`${styles.photoButton} ${styles.uploadButton}`}
-                  onClick={handleUploadPhoto}
+                  onClick={handleSavePhoto}
                   disabled={uploading}
                 >
-                  {uploading ? 'Enviando...' : 'Salvar'}
+                  {uploading ? ' Salvando...' : ' Salvar'}
                 </button>
               )}
               
-              {userData?.photoURL && !selectedFile && (
+              {userData?.fotoPerfil && !selectedFile && !photoPreview && (
                 <button 
                   className={`${styles.photoButton} ${styles.removeButton}`}
                   onClick={handleRemovePhoto}
                   disabled={uploading}
                 >
-                  Remover Foto
+                  {uploading ? ' Removendo...' : ' Remover Foto'}
                 </button>
               )}
               
@@ -444,7 +564,7 @@ export default function Profile() {
                 onClick={cancelPhotoModal}
                 disabled={uploading}
               >
-                Cancelar
+                ❌ Cancelar
               </button>
             </div>
           </div>
@@ -459,17 +579,31 @@ export default function Profile() {
               className={styles.profileAvatarContainer}
               onClick={handlePhotoClick}
             >
-              {userData?.photoURL ? (
+              {userData?.fotoPerfil ? (
                 <img 
-                  src={userData.photoURL} 
+                  src={userData.fotoPerfil} 
                   alt="Foto de perfil" 
                   className={styles.profileAvatarImage}
+                  onError={(e) => {
+                    console.log('Erro ao carregar imagem, usando avatar padrão');
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    // Mostrar avatar padrão
+                    const avatarDiv = target.nextElementSibling as HTMLElement;
+                    if (avatarDiv) {
+                      avatarDiv.style.display = 'flex';
+                    }
+                  }}
                 />
-              ) : (
-                <div className={styles.profileAvatar}>
-                  {userData?.nome?.charAt(0).toUpperCase() || 'U'}
-                </div>
-              )}
+              ) : null}
+              
+              <div 
+                className={styles.profileAvatar} 
+                style={{ display: userData?.fotoPerfil ? 'none' : 'flex' }}
+              >
+                {userData?.nome?.charAt(0).toUpperCase() || 'U'}
+              </div>
+              
               <div className={styles.profileAvatarOverlay}>
                 <span className={styles.cameraIcon}>📷</span>
               </div>
@@ -485,13 +619,13 @@ export default function Profile() {
               </p>
               <div className={styles.profileStats}>
                 <span className={styles.profileStat}>
-                  {userData?.altura ? `${userData.altura}cm` : 'Altura: -'}
+                  {userData?.altura ? `Altura: ${userData.altura} cm` : 'Altura: -'}
                 </span>
                 <span className={styles.profileStat}>
-                  {userData?.peso ? `${userData.peso}kg` : 'Peso: -'}
+                  {userData?.peso ? `Peso: ${userData.peso} kg` : 'Peso: -'}
                 </span>
                 <span className={styles.profileStat}>
-                  {userData?.idade ? `${userData.idade} anos` : 'Idade: -'}
+                  {userData?.idade ? `Idade: ${userData.idade} anos` : 'Idade: -'}
                 </span>
               </div>
             </div>
