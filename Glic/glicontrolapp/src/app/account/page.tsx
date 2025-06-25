@@ -324,7 +324,7 @@ export default function Profile() {
           <ul className={styles.sidebarMenu}>
             <li className={styles.sidebarItem}>
               <Link href="/dashboard" className={styles.sidebarLink}>
-                Tela inicial
+                Dashboard
               </Link>
             </li>
             <li className={styles.sidebarItem}>
