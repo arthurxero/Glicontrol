@@ -5,11 +5,10 @@ import Image from 'next/image';
 import glicontrolLogo from '@/assets/glicontrol.png';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-// import { useParams } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/services/firebaseConfig';
 
-// Interface para os alimentos da tabela TACO
+// Interfaces
 interface Food {
   id: string;
   nome: string;
@@ -57,21 +56,55 @@ export default function FoodDetails() {
   const [selectedUnit, setSelectedUnit] = useState<'grams' | 'portions'>('grams');
   
   const router = useRouter();
-  // const params = useParams();
-  
-  // CORREÇÃO: Obter ID da URL usando window.location como fallback
   const [foodId, setFoodId] = useState<string>('');
-  
+  const [mounted, setMounted] = useState(false);
+
+  // Wait for complete hydration
   useEffect(() => {
-    // Extrair ID da URL atual
-    if (typeof window !== 'undefined') {
-      const pathSegments = window.location.pathname.split('/');
-      const id = pathSegments[pathSegments.length - 1];
-      setFoodId(id);
-    }
+    setMounted(true);
   }, []);
 
-  // Função para normalizar e extrair nome do alimento
+  useEffect(() => {
+    if (!mounted) return;
+
+    // Multiple ways to get the ID
+    const getId = () => {
+      // Method 1: Current URL
+      const currentUrl = window.location.href;
+      const urlParts = currentUrl.split('/');
+      let id = urlParts[urlParts.length - 1];
+      
+      // Remove query parameters and fragments
+      id = id.split('?')[0].split('#')[0];
+      
+      // Method 2: If it doesn't work, try by pathname
+      if (!id || id === 'food') {
+        const pathname = window.location.pathname;
+        const pathParts = pathname.split('/');
+        id = pathParts[pathParts.length - 1];
+      }
+      
+      // Method 3: If it still doesn't work, search by pattern
+      if (!id || id === 'food') {
+        const match = currentUrl.match(/\/food\/([^\/\?#]+)/);
+        if (match) {
+          id = match[1];
+        }
+      }
+      
+      return id;
+    };
+
+    const id = getId();
+    console.log('Extracted ID:', id);
+    console.log('Current URL:', window.location.href);
+    
+    if (id && id !== 'food' && id !== foodId) {
+      setFoodId(decodeURIComponent(id));
+    }
+  }, [mounted, foodId]);
+
+  // Helper functions
   const extractFoodName = (data: any): string => {
     const possibleNames = [
       data['Descrição dos alimentos'],
@@ -87,7 +120,6 @@ export default function FoodDetails() {
     return possibleNames.find(name => name && typeof name === 'string' && name.trim() !== '') || "Alimento sem nome";
   };
 
-  // Função para extrair dados nutricionais com múltiplas tentativas
   const extractNutrientValue = (data: any, nutrientKeys: string[]): number => {
     for (const key of nutrientKeys) {
       const value = data[key];
@@ -101,7 +133,6 @@ export default function FoodDetails() {
     return 0;
   };
 
-  // Função para converter documento Firestore em objeto Food
   const documentToFood = (doc: any): Food => {
     const data = doc.data();
     const nome = extractFoodName(data);
@@ -160,31 +191,31 @@ export default function FoodDetails() {
     };
   };
 
-  // Carregar dados do alimento
+  // Load food details
   const loadFoodDetails = useCallback(async () => {
     if (!foodId) {
-      console.error('Food ID não encontrado na URL');
+      console.error('Food ID not found in URL');
       router.push('/search');
       return;
     }
     
     try {
       setIsLoading(true);
-      console.log('Carregando dados para o ID:', foodId);
+      console.log('Loading data for ID:', foodId);
       
       const foodDoc = doc(db, 'tabela_taco', foodId);
       const foodSnapshot = await getDoc(foodDoc);
       
       if (foodSnapshot.exists()) {
         const foodData = documentToFood(foodSnapshot);
-        console.log('Dados do alimento carregados:', foodData);
+        console.log('Food data loaded:', foodData);
         setFood(foodData);
       } else {
-        console.error('Alimento não encontrado no Firestore');
-        // Tentar buscar com decodificação de URL
+        console.error('Food not found in Firestore');
+        // Try searching with URL decoding
         const decodedId = decodeURIComponent(foodId);
         if (decodedId !== foodId) {
-          console.log('Tentando com ID decodificado:', decodedId);
+          console.log('Trying with decoded ID:', decodedId);
           const decodedFoodDoc = doc(db, 'tabela_taco', decodedId);
           const decodedFoodSnapshot = await getDoc(decodedFoodDoc);
           
@@ -199,7 +230,7 @@ export default function FoodDetails() {
         router.push('/search');
       }
     } catch (error) {
-      console.error("Erro ao carregar detalhes do alimento:", error);
+      console.error("Error loading food details:", error);
       alert('Erro ao carregar dados do alimento');
       router.push('/search');
     } finally {
@@ -207,11 +238,11 @@ export default function FoodDetails() {
     }
   }, [foodId, router]);
 
-  // Calcular nutrientes baseado na quantidade selecionada
+  // Calculate nutrients
   const calculateNutrients = useCallback(() => {
     if (!food) return;
 
-    let baseQuantity = 100; // valores da tabela TACO são por 100g
+    let baseQuantity = 100;
     let actualQuantity = selectedQuantity;
 
     if (selectedUnit === 'portions' && food.porcao) {
@@ -234,6 +265,7 @@ export default function FoodDetails() {
     setCalculatedNutrients(calculated);
   }, [food, selectedQuantity, selectedUnit]);
 
+  // Effects
   useEffect(() => {
     setIsLoaded(true);
   }, []);
@@ -248,6 +280,7 @@ export default function FoodDetails() {
     calculateNutrients();
   }, [calculateNutrients]);
 
+  // Event handlers
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
@@ -280,7 +313,6 @@ export default function FoodDetails() {
     }
   };
 
-  // Função para exibir valores formatados
   const formatNutrient = (value: number, unit: string = 'g'): string => {
     if (value === 0) return `0${unit}`;
     return `${value.toFixed(1)}${unit}`;
@@ -291,6 +323,7 @@ export default function FoodDetails() {
     return `${value.toFixed(0)} kcal`;
   };
 
+  // Loading state
   if (isLoading) {
     return (
       <div className={styles.container}>
@@ -313,6 +346,7 @@ export default function FoodDetails() {
     );
   }
 
+  // Error state
   if (!food) {
     return (
       <div className={styles.container}>
@@ -328,6 +362,7 @@ export default function FoodDetails() {
     );
   }
 
+  // Main render
   return (
     <div className={styles.container}>
       <header className={styles.header}>
