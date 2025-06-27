@@ -11,6 +11,7 @@ import {
   User
 } from 'firebase/auth';
 import { auth } from '../../services/firebaseConfig';
+import { setPersistence, browserLocalPersistence } from 'firebase/auth';
 
 const Login: React.FC = () => {
   const router = useRouter();
@@ -35,21 +36,26 @@ const Login: React.FC = () => {
 
     return () => unsubscribe();
   }, []);
+const handleSignIn = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
+  setError('');
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+  try {
+    // Define persistência da sessão para "local" (mesmo após recarregar ou trocar de rota)
+    await setPersistence(auth, browserLocalPersistence);
 
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.push('/dashboard');
-    } catch (error: any) {
-      setError(translateFirebaseError(error.code));
-    } finally {
-      setLoading(false);
-    }
-  };
+    // Faz login com Firebase Auth
+    await signInWithEmailAndPassword(auth, email, password);
+
+    // Redireciona para o dashboard
+    router.push('/dashboard');
+  } catch (error: any) {
+    setError(translateFirebaseError(error.code));
+  } finally {
+    setLoading(false);
+  }
+};
 
   const translateFirebaseError = (code: string) => {
     switch(code) {
